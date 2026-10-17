@@ -1,29 +1,149 @@
-# MedTrack
+# MedTrack — Medicine Tracker
 
-A minimal medicine tracker for daily doses, stock, and history.
+A minimal app that answers three questions: **What should I take today? Have I taken it? How much stock is left?**
 
-## Current milestone: PR #01 — Project foundation
+This README is the project's standing overview and progress tracker. Keep the overview, feature scope, PR sequence, and completed-work records stable. As work progresses, update only the relevant status, actual PR link, completion checklist, and validation result. Change scope or sequencing only when explicitly agreed.
 
-The repository contains a runnable React + TypeScript app with Vite, Tailwind
-CSS, Lucide icons, ESLint, Prettier, Vitest, and GitHub Actions CI. The initial
-screen is a placeholder. Medicine registration, dose logging, persistence,
-reminders, navigation, and Android packaging are planned for subsequent PRs.
+## Project status
 
-## Run on your PC
+| Item                         | Status                            |
+| ---------------------------- | --------------------------------- |
+| Target                       | MedTrack v1.0 MVP                 |
+| Planned implementation PRs   | 13                                |
+| Completed and merged         | 1 / 13                            |
+| Current milestone            | Project foundation complete       |
+| Next planned work            | PR 02 — App Layout and Navigation |
+| Functional medicine tracking | Planned                           |
+| Android APK                  | Planned                           |
 
-Install Node.js 24 LTS (24.13 or newer within version 24) and npm. If you use nvm,
-run `nvm install` and `nvm use`; `.nvmrc` selects the same major version as CI.
+**Status key:** Planned → In progress → Ready for review → Done (merged). A feature is Done only when its implementation and relevant verification are complete and merged.
+
+## The app
+
+| Screen    | Purpose                                                                                               |
+| --------- | ----------------------------------------------------------------------------------------------------- |
+| Today     | Default home screen: today's doses grouped by meal window, progress, and Taken / Skip / Later actions |
+| Medicines | Register medicines, manage schedules, inspect stock, refill, pause, and archive                       |
+| Insights  | Calendar history, taken/skipped/unconfirmed counts, and weekly/monthly adherence                      |
+
+**Example acceptance scenario:** Vitamin D, daily after lunch, 1 tablet per dose, starting stock 30. Taken changes stock to 29; a repeated confirmation keeps it at 29; Undo restores 30; Skip and Later do not deduct stock. “After lunch” does not assume a notification clock time.
+
+## Feature checklist
+
+| ID        | Feature                                                                               | Planned PR(s) | Status  |
+| --------- | ------------------------------------------------------------------------------------- | ------------- | ------- |
+| FR01      | Register medicine name, strength, description, dose quantity, unit, and initial stock | 03, 05        | Planned |
+| FR02      | Daily, alternate-day, selected-weekday, and every-X-days schedules                    | 04, 05        | Planned |
+| FR03      | Meal windows or custom times, multiple daily doses, and start/end dates               | 04, 05        | Planned |
+| FR04      | Today's scheduled medicines, grouped by timing with progress and stock                | 06            | Planned |
+| FR05      | Taken, Skipped, and Later actions; Later only snoozes reminders                       | 07, 09        | Planned |
+| FR06      | Deduct stock only on confirmed Taken, using atomic and idempotent updates             | 07            | Planned |
+| FR07      | Stock refills, explicit adjustments, reconciliation, and refill history               | 08            | Planned |
+| FR08      | Scheduled dose reminders, permission handling, snooze, and rescheduling               | 09, 12        | Planned |
+| FR09      | Low-stock alerts with duplicate-warning prevention                                    | 08, 09        | Planned |
+| FR10      | Daily dose history with exact timestamps and correction audit trail                   | 07, 10        | Planned |
+| FR11      | Calendar, weekly/monthly adherence, and medicine-specific history                     | 10            | Planned |
+| FR12      | Edit, pause, and archive medicines/schedules while preserving history                 | 04, 05        | Planned |
+| FR13      | Undo incorrect dose entries and reverse the matching stock transaction                | 07            | Planned |
+| FR14      | Estimate remaining supply and stock-out date using upcoming schedules                 | 08            | Planned |
+| FR15      | Local persistence and offline access without a mandatory account                      | 03, 13        | Planned |
+| UX01      | Responsive Today / Medicines / Insights navigation and reusable controls              | 02            | Planned |
+| UX02      | Light/dark themes and accessible layouts and tap targets                              | 02, 13        | Planned |
+| DATA01    | Export, backup, restore, and migration verification                                   | 13            | Planned |
+| QA01      | PC development, formatting, linting, startup test, and build CI                       | 01            | Done    |
+| QA02      | Domain tests for schedules, stock, corrections, and analytics                         | 04–10         | Planned |
+| QA03      | Automated browser end-to-end tests on pull requests                                   | 11            | Planned |
+| ANDROID01 | Capacitor integration, emulator checks, and automated debug APK builds                | 12            | Planned |
+| RELEASE01 | Physical-device validation, signing documentation, and release readiness              | 12, 13        | Planned |
+
+## Planned PRs
+
+The numbers below are roadmap identifiers. Actual GitHub PR links are added when each PR exists.
+
+| Plan | PR / branch                                                                               | Deliverable                                                                              | Status        |
+| ---- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------- |
+| 01   | [Project Setup](https://github.com/bytesimplified/medtrack/pull/1) · `feat/project-setup` | React/Vite/TypeScript, Tailwind/icons, ESLint/Prettier/Vitest, and CI                    | Done (merged) |
+| 02   | App Layout and Navigation · `feat/app-shell`                                              | Responsive layout, three tabs, reusable UI, and light/dark themes                        | Planned       |
+| 03   | Local Database and Models · `feat/database`                                               | Dexie persistence, versioned schema, medicine/schedule/occurrence/event/stock models     | Planned       |
+| 04   | Scheduling Engine · `feat/scheduling-engine`                                              | Recurrence rules, meal windows, reminder times, and date/timezone tests                  | Planned       |
+| 05   | Medicine Registration · `feat/medicine-management`                                        | Add/edit medicine, configure doses, pause/archive, and persistence validation            | Planned       |
+| 06   | Today's Dashboard · `feat/today-dashboard`                                                | Generate occurrences, timing groups, progress, and empty/paused/multi-dose states        | Planned       |
+| 07   | Dose Tracking and Stock Engine · `feat/dose-stock-engine`                                 | Taken/Skip/Later, audit events, atomic ledger updates, Undo, and idempotency             | Planned       |
+| 08   | Stock Management · `feat/stock-management`                                                | Refills, adjustments, supply forecasting, and low-stock threshold detection              | Planned       |
+| 09   | Reminders and Notifications · `feat/notifications`                                        | Platform adapter, Android local reminders, snooze, cancellation, and low-stock rules     | Planned       |
+| 10   | History and Analytics · `feat/analytics`                                                  | Calendar, medicine history, taken/skipped/unconfirmed counts, and adherence              | Planned       |
+| 11   | Automated End-to-End Tests · `test/e2e-coverage`                                          | Playwright user journeys and browser-test CI                                             | Planned       |
+| 12   | Android Integration and APK CI · `feat/android-build`                                     | Capacitor, app identity/permissions, emulator checks, debug APK workflow, signing guide  | Planned       |
+| 13   | Backup, Polish and Release · `release/v1-polish`                                          | Export/restore, offline/error handling, accessibility, migrations, and release checklist | Planned       |
+
+**Milestone 1:** Functional browser MVP after PR 07.  
+**Milestone 2:** v1.0 release candidate after PR 13, subject to final device validation and signing.  
+PR 09 implements the notification adapter; full Android integration and device validation follow in PR 12.
+
+## Completed work
+
+### PR 01 — Project foundation
+
+- [x] Initialize React, Vite, and strict TypeScript configuration.
+- [x] Configure Tailwind CSS and Lucide icons.
+- [x] Add a responsive starter landing screen, clearly labeled as coming soon.
+- [x] Configure ESLint, Prettier, and editor formatting.
+- [x] Configure Vitest, React Testing Library, DOM setup, and startup smoke test.
+- [x] Add lockfile-based dependency installation and Node.js 24 configuration.
+- [x] Add GitHub Actions formatting, lint, test, typecheck, and production-build checks.
+- [x] Document PC setup, commands, source layout, and planned milestones.
+- [x] Verify a clean install and all local checks.
+- [x] Pass [GitHub CI](https://github.com/bytesimplified/medtrack/actions/runs/39052026928).
+- [x] Merge PR 01 into `main`.
+
+**Four implementation commits:**
+
+1. `chore: initialize React Vite TypeScript project`
+2. `chore: configure Tailwind CSS and icon library`
+3. `chore: configure ESLint, Prettier and Vitest`
+4. `ci: add GitHub Actions lint and unit test workflow`
+
+**Verified:** clean `npm ci`, formatting, zero-warning lint, 1 startup test, TypeScript, production build, development-server startup, and `git diff --check`.
+
+The initially empty repository received a README-only bootstrap commit to establish `main`. The starter screen does not yet store medicines or provide dose tracking, reminders, offline application loading, or an APK.
+
+## Architecture and data rules
+
+| Area           | Approach                                                        |
+| -------------- | --------------------------------------------------------------- |
+| Web app        | React + TypeScript + Vite                                       |
+| Styling        | Tailwind CSS + Lucide icons                                     |
+| Local database | Planned: IndexedDB with Dexie                                   |
+| Android        | Planned: Capacitor + local notifications                        |
+| Testing        | Vitest now; Playwright and emulator/device checks planned       |
+| Delivery       | GitHub Actions quality checks now; automated APK builds planned |
+
+- Keep scheduling, dose logging, stock calculation, analytics, and platform notifications separate from UI.
+- Model Medicine, versioned DoseSchedule, DoseOccurrence, append-only DoseEvent, StockTransaction, and reminder preferences.
+- Calculate stock from the transaction ledger; record initial stock, consumption, refills, adjustments, and reversals.
+- Apply related dose/event/stock writes atomically and prevent duplicate deductions.
+- Preserve historical schedule quantities and events when schedules change.
+- Keep past pending doses **unconfirmed**, distinct from explicitly skipped doses.
+- Never silently create negative stock; offer explicit refill or reconciliation.
+- Calculate historical adherence from completed dates; exclude future doses.
+- Snoozing changes reminder timing, not stock or the dose's final status.
+
+## Run and check on a PC
 
 ```sh
 git clone https://github.com/bytesimplified/medtrack.git
 cd medtrack
-git switch feat/project-setup # Until PR #01 is merged; then use main.
 npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. Use your browser's responsive device mode to
-inspect a mobile viewport. No account, API keys, or backend are required.
+Use Node.js 24 LTS (24.13 or newer within version 24). Open the URL printed by Vite.
+
+```sh
+npm run check
+```
+
+This runs formatting, linting, tests, typechecking, and the production build. Browser development covers shared logic; emulator and physical-device checks will validate Android behavior.
 
 ## Commands
 
@@ -66,16 +186,19 @@ CI runs on pull requests targeting `main`, pushes to `main`, and manual dispatch
 It installs the lockfile with `npm ci`, then checks formatting, lint, tests, and
 the TypeScript/production build. Actions use pinned commit SHAs, read-only
 repository permissions, and no project secrets. Branch protection is a separate
-repository setting; this PR does not configure it.
+repository setting; configure it separately in repository settings.
 
-## Next milestones
+## MVP boundaries
 
-1. PR #02: Responsive app shell, Today/Medicines/Insights navigation, and themes.
-2. PRs #03–#07: Local database, scheduling, registration, Today, and the dose/stock engine.
-3. PRs #08–#10: Refills, forecasts, reminders, history, and basic insights.
-4. PRs #11–#13: Browser E2E tests, Capacitor Android/APK CI, backup, and release polish.
+No AI medical advice, drug-interaction checking, prescription scanning, clinician messaging, family accounts, medicine ordering, or advanced health dashboards in v1. The app records the user's medication routine and does not prescribe treatment.
 
-PC browser tests will cover the shared application logic. Android emulator and
-physical-device checks will cover native permissions and background reminders
-once Capacitor is introduced. **This PR does not generate an APK or provide
-offline application loading yet.**
+## Updating this tracker
+
+When a planned PR progresses or is completed:
+
+1. Update its status and actual PR link in the roadmap.
+2. Update only the affected feature statuses and completed-work checklist.
+3. Update the merged count, current milestone, next work, and validation evidence.
+4. Preserve the existing overview, feature descriptions, PR sequence, and historical completed work unless a scope change is explicitly agreed.
+
+“Ready for review” means implemented and verified; “Done” means merged. Keep future edits small and focused on progress.
