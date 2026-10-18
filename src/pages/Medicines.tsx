@@ -8,10 +8,11 @@ import {
   Play,
   Plus,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { EmptyState } from '../components/ui/EmptyState'
+import { Input } from '../components/ui/Input'
 import { db } from '../database/db'
 import type {
   DoseSchedule,
@@ -24,6 +25,8 @@ import {
   setMedicineArchived,
   setSchedulePaused,
 } from '../medicines/registration'
+import { adjustStock, listStockHistory, refillStock } from '../stock/ledger'
+import { calculateStockForecast, type StockForecast } from '../stock/forecast'
 import { MedicineForm } from './MedicineForm'
 import { ScheduleForm } from './ScheduleForm'
 
@@ -31,7 +34,10 @@ interface MedicineRecord {
   medicine: Medicine
   schedules: DoseSchedule[]
   stockTransactions: StockTransaction[]
+  forecast: StockForecast
 }
+
+type StockAction = 'refill' | 'adjustment'
 
 const unitNames: Record<
   Medicine['unit'],
@@ -73,15 +79,6 @@ function timingLabel(schedule: DoseSchedule) {
     : meal
 }
 
-function stockBalance(transactions: StockTransaction[]): string | null {
-  const total = transactions.reduce(
-    (sum, transaction) => sum + transaction.quantityDelta,
-    0,
-  )
-  if (!Number.isSafeInteger(total)) return null
-  return formatQuantity(total as Quantity)
-}
-
 function unitLabel(amount: string, unit: { singular: string; plural: string }) {
   const quantity = Number(amount)
   return quantity > 0 && quantity <= 1 ? unit.singular : unit.plural
@@ -108,6 +105,10 @@ export function Medicines() {
     medicine: Medicine
     schedule: DoseSchedule
   }>()
+  const [stockAction, setStockAction] = useState<{
+    medicineId: string
+    kind: StockAction
+  }>()
   const [busy, setBusy] = useState<string | null>(null)
 
   useEffect(() => {
@@ -117,17 +118,28 @@ export function Medicines() {
         db.doseSchedules.toArray(),
         db.stockTransactions.toArray(),
       ])
+      const now = new Date()
       return medicines
         .sort((left, right) => left.name.localeCompare(right.name))
-        .map((medicine) => ({
-          medicine,
-          schedules: schedules.filter(
+        .map((medicine) => {
+          const medicineSchedules = schedules.filter(
             (schedule) => schedule.medicineId === medicine.id,
-          ),
-          stockTransactions: transactions.filter(
+          )
+          const medicineTransactions = transactions.filter(
             (transaction) => transaction.medicineId === medicine.id,
-          ),
-        }))
+          )
+          return {
+            medicine,
+            schedules: medicineSchedules,
+            stockTransactions: medicineTransactions,
+            forecast: calculateStockForecast(
+              medicine,
+              medicineSchedules,
+              medicineTransactions,
+              now,
+            ),
+          }
+        })
     })
     const subscription = query.subscribe({
       next(value) {
@@ -272,150 +284,345 @@ export function Medicines() {
 
       {!loading && !formOpen && records.length > 0 && (
         <div className="medicine-list">
-          {records.map(({ medicine, schedules, stockTransactions }) => {
-            const balance = stockBalance(stockTransactions)
-            const unit = unitNames[medicine.unit]
-            return (
-              <Card className="medicine-card" key={medicine.id}>
-                <div className="medicine-card-top">
-                  <div>
-                    <div className="medicine-title-row">
-                      <h2 className="medicine-name">{medicine.name}</h2>
-                      {medicine.isArchived && (
-                        <span className="status-badge">Archived</span>
+          {records.map(
+            ({ medicine, schedules, stockTransactions, forecast }) => {
+              const balance =
+                forecast.balance === null
+                  ? null
+                  : formatQuantity(forecast.balance)
+              const unit = unitNames[medicine.unit]
+              return (
+                <Card className="medicine-card" key={medicine.id}>
+                  <div className="medicine-card-top">
+                    <div>
+                      <div className="medicine-title-row">
+                        <h2 className="medicine-name">{medicine.name}</h2>
+                        {medicine.isArchived && (
+                          <span className="status-badge">Archived</span>
+                        )}
+                      </div>
+                      {medicine.strength && (
+                        <p className="medicine-subtitle">{medicine.strength}</p>
                       )}
                     </div>
-                    {medicine.strength && (
-                      <p className="medicine-subtitle">{medicine.strength}</p>
+                    <p className="stock-value">
+                      {balance === null
+                        ? 'Stock unavailable'
+                        : balance + ' ' + unitLabel(balance, unit)}
+                      <span> recorded stock</span>
+                      {forecast.lowStock && (
+                        <span className="status-badge" role="status">
+                          Low stock
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  <p className="field-hint" aria-live="polite">
+                    {forecast.daysOfSupply === null
+                      ? 'Supply estimate unavailable without upcoming doses.'
+                      : `About ${forecast.daysOfSupply.toFixed(1)} days of supply · projected stock-out ${forecast.stockOutDate ?? 'beyond the next year'}`}
+                  </p>
+                  {medicine.description && (
+                    <p className="medicine-copy">{medicine.description}</p>
+                  )}
+                  {medicine.notes && (
+                    <p className="medicine-copy">Note: {medicine.notes}</p>
+                  )}
+                  <div className="schedule-list">
+                    {schedules.length === 0 ? (
+                      <p className="field-hint">No dose schedules saved.</p>
+                    ) : (
+                      schedules.map((schedule) => {
+                        const paused = isPausedToday(schedule)
+                        return (
+                          <div className="schedule-row" key={schedule.id}>
+                            <div>
+                              <p className="schedule-title">
+                                {formatQuantity(
+                                  schedule.quantityPerDose as Quantity,
+                                )}{' '}
+                                {unitLabel(
+                                  formatQuantity(
+                                    schedule.quantityPerDose as Quantity,
+                                  ),
+                                  unit,
+                                )}{' '}
+                                · {timingLabel(schedule)}
+                              </p>
+                              <p className="field-hint">
+                                {recurrenceLabel(schedule)} · starts{' '}
+                                {schedule.startDate}
+                                {' · version ' + schedule.version}
+                                {schedule.effectiveTo
+                                  ? ' · replaced from ' + schedule.effectiveTo
+                                  : ''}
+                                {schedule.endDate
+                                  ? ' · ends ' + schedule.endDate
+                                  : ''}
+                                {paused ? ' · Paused' : ''}
+                              </p>
+                            </div>
+                            <Button
+                              className="button-secondary button-small"
+                              disabled={
+                                busy === schedule.id ||
+                                medicine.isArchived ||
+                                schedule.effectiveTo !== null
+                              }
+                              onClick={() =>
+                                openScheduleEdit(medicine, schedule)
+                              }
+                              aria-label={'Edit schedule for ' + medicine.name}
+                            >
+                              <Pencil size={16} aria-hidden="true" />
+                              Edit schedule
+                            </Button>
+                            <Button
+                              className="button-secondary button-small"
+                              disabled={
+                                busy === schedule.id ||
+                                medicine.isArchived ||
+                                schedule.effectiveTo !== null
+                              }
+                              onClick={() =>
+                                void runAction(schedule.id, () =>
+                                  setSchedulePaused(
+                                    schedule.id,
+                                    !paused,
+                                    localDateInTimeZone(
+                                      new Date(),
+                                      schedule.timezone,
+                                    ),
+                                  ),
+                                )
+                              }
+                              aria-label={
+                                (paused
+                                  ? 'Resume schedule for '
+                                  : 'Pause schedule for ') + medicine.name
+                              }
+                            >
+                              {paused ? (
+                                <Play size={16} aria-hidden="true" />
+                              ) : (
+                                <Pause size={16} aria-hidden="true" />
+                              )}
+                              {paused ? 'Resume' : 'Pause'}
+                            </Button>
+                          </div>
+                        )
+                      })
                     )}
                   </div>
-                  <p className="stock-value">
-                    {balance === null
-                      ? 'Stock unavailable'
-                      : balance + ' ' + unitLabel(balance, unit)}
-                    <span> recorded stock</span>
-                  </p>
-                </div>
-                {medicine.description && (
-                  <p className="medicine-copy">{medicine.description}</p>
-                )}
-                {medicine.notes && (
-                  <p className="medicine-copy">Note: {medicine.notes}</p>
-                )}
-                <div className="schedule-list">
-                  {schedules.length === 0 ? (
-                    <p className="field-hint">No dose schedules saved.</p>
-                  ) : (
-                    schedules.map((schedule) => {
-                      const paused = isPausedToday(schedule)
-                      return (
-                        <div className="schedule-row" key={schedule.id}>
-                          <div>
-                            <p className="schedule-title">
-                              {formatQuantity(
-                                schedule.quantityPerDose as Quantity,
-                              )}{' '}
-                              {unitLabel(
-                                formatQuantity(
-                                  schedule.quantityPerDose as Quantity,
-                                ),
-                                unit,
-                              )}{' '}
-                              · {timingLabel(schedule)}
-                            </p>
-                            <p className="field-hint">
-                              {recurrenceLabel(schedule)} · starts{' '}
-                              {schedule.startDate}
-                              {' · version ' + schedule.version}
-                              {schedule.effectiveTo
-                                ? ' · replaced from ' + schedule.effectiveTo
-                                : ''}
-                              {schedule.endDate
-                                ? ' · ends ' + schedule.endDate
-                                : ''}
-                              {paused ? ' · Paused' : ''}
-                            </p>
-                          </div>
-                          <Button
-                            className="button-secondary button-small"
-                            disabled={
-                              busy === schedule.id ||
-                              medicine.isArchived ||
-                              schedule.effectiveTo !== null
-                            }
-                            onClick={() => openScheduleEdit(medicine, schedule)}
-                            aria-label={'Edit schedule for ' + medicine.name}
-                          >
-                            <Pencil size={16} aria-hidden="true" />
-                            Edit schedule
-                          </Button>
-                          <Button
-                            className="button-secondary button-small"
-                            disabled={
-                              busy === schedule.id ||
-                              medicine.isArchived ||
-                              schedule.effectiveTo !== null
-                            }
-                            onClick={() =>
-                              void runAction(schedule.id, () =>
-                                setSchedulePaused(
-                                  schedule.id,
-                                  !paused,
-                                  localDateInTimeZone(
-                                    new Date(),
-                                    schedule.timezone,
-                                  ),
-                                ),
-                              )
-                            }
-                            aria-label={
-                              (paused
-                                ? 'Resume schedule for '
-                                : 'Pause schedule for ') + medicine.name
-                            }
-                          >
-                            {paused ? (
-                              <Play size={16} aria-hidden="true" />
-                            ) : (
-                              <Pause size={16} aria-hidden="true" />
-                            )}
-                            {paused ? 'Resume' : 'Pause'}
-                          </Button>
-                        </div>
-                      )
-                    })
+                  <div className="medicine-actions">
+                    <Button
+                      className="button-secondary button-small"
+                      disabled={busy === medicine.id || medicine.isArchived}
+                      aria-label={'Refill stock for ' + medicine.name}
+                      onClick={() =>
+                        setStockAction({
+                          medicineId: medicine.id,
+                          kind: 'refill',
+                        })
+                      }
+                    >
+                      <Plus size={16} aria-hidden="true" />
+                      Refill stock
+                    </Button>
+                    <Button
+                      className="button-secondary button-small"
+                      disabled={busy === medicine.id || medicine.isArchived}
+                      aria-label={'Adjust stock for ' + medicine.name}
+                      onClick={() =>
+                        setStockAction({
+                          medicineId: medicine.id,
+                          kind: 'adjustment',
+                        })
+                      }
+                    >
+                      Adjust stock
+                    </Button>
+                    <Button
+                      className="button-secondary button-small"
+                      onClick={() => openEditForm(medicine)}
+                    >
+                      <Pencil size={16} aria-hidden="true" />
+                      Edit details
+                    </Button>
+                    <Button
+                      className="button-secondary button-small"
+                      disabled={busy === medicine.id}
+                      onClick={() =>
+                        void runAction(medicine.id, () =>
+                          setMedicineArchived(
+                            medicine.id,
+                            !medicine.isArchived,
+                          ),
+                        )
+                      }
+                    >
+                      {medicine.isArchived ? (
+                        <ArchiveRestore size={16} aria-hidden="true" />
+                      ) : (
+                        <Archive size={16} aria-hidden="true" />
+                      )}
+                      {medicine.isArchived ? 'Restore' : 'Archive'}
+                    </Button>
+                  </div>
+                  {stockAction?.medicineId === medicine.id && (
+                    <StockActionForm
+                      key={medicine.id + stockAction.kind}
+                      medicine={medicine}
+                      kind={stockAction.kind}
+                      busy={busy === medicine.id}
+                      onCancel={() => setStockAction(undefined)}
+                      onSave={async (quantity, note) => {
+                        if (stockAction.kind === 'refill') {
+                          await refillStock(medicine.id, quantity, note)
+                        } else {
+                          await adjustStock(medicine.id, quantity, note)
+                        }
+                        setStockAction(undefined)
+                        setNotice(
+                          stockAction.kind === 'refill'
+                            ? 'Stock refill recorded.'
+                            : 'Stock adjustment recorded.',
+                        )
+                      }}
+                      onBusy={(isBusy) => setBusy(isBusy ? medicine.id : null)}
+                    />
                   )}
-                </div>
-                <div className="medicine-actions">
-                  <Button
-                    className="button-secondary button-small"
-                    onClick={() => openEditForm(medicine)}
-                  >
-                    <Pencil size={16} aria-hidden="true" />
-                    Edit details
-                  </Button>
-                  <Button
-                    className="button-secondary button-small"
-                    disabled={busy === medicine.id}
-                    onClick={() =>
-                      void runAction(medicine.id, () =>
-                        setMedicineArchived(medicine.id, !medicine.isArchived),
-                      )
-                    }
-                  >
-                    {medicine.isArchived ? (
-                      <ArchiveRestore size={16} aria-hidden="true" />
-                    ) : (
-                      <Archive size={16} aria-hidden="true" />
-                    )}
-                    {medicine.isArchived ? 'Restore' : 'Archive'}
-                  </Button>
-                </div>
-              </Card>
-            )
-          })}
+                  {stockTransactions.length > 0 && (
+                    <details className="stock-history">
+                      <summary>
+                        Stock history ({stockTransactions.length})
+                      </summary>
+                      <ul>
+                        {listStockHistory(stockTransactions).map(
+                          (transaction) => {
+                            const kind =
+                              transaction.transactionType === 'initial'
+                                ? 'Starting stock'
+                                : transaction.transactionType === 'consumption'
+                                  ? 'Dose taken'
+                                  : transaction.transactionType === 'reversal'
+                                    ? 'Undo'
+                                    : transaction.transactionType === 'refill'
+                                      ? 'Refill'
+                                      : 'Adjustment'
+                            const amount = formatQuantity(
+                              Math.abs(transaction.quantityDelta) as Quantity,
+                            )
+                            const sign =
+                              transaction.quantityDelta > 0 ? '+' : '−'
+                            return (
+                              <li key={transaction.id}>
+                                <span>
+                                  {kind} · {sign}
+                                  {amount} {unitLabel(amount, unit)}
+                                </span>
+                                {transaction.note && (
+                                  <span>Reason: {transaction.note}</span>
+                                )}
+                                <time dateTime={transaction.createdAt}>
+                                  {new Date(
+                                    transaction.createdAt,
+                                  ).toLocaleString()}
+                                </time>
+                              </li>
+                            )
+                          },
+                        )}
+                      </ul>
+                    </details>
+                  )}
+                </Card>
+              )
+            },
+          )}
         </div>
       )}
     </>
+  )
+}
+
+function StockActionForm({
+  medicine,
+  kind,
+  busy,
+  onCancel,
+  onSave,
+  onBusy,
+}: {
+  medicine: Medicine
+  kind: StockAction
+  busy: boolean
+  onCancel: () => void
+  onSave: (quantity: string, note: string) => Promise<void>
+  onBusy: (busy: boolean) => void
+}) {
+  const unit = unitNames[medicine.unit]
+  const [quantity, setQuantity] = useState('')
+  const [note, setNote] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const isRefill = kind === 'refill'
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setError(null)
+    onBusy(true)
+    try {
+      await onSave(quantity, note)
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : 'Stock could not be updated. Please try again.',
+      )
+    } finally {
+      onBusy(false)
+    }
+  }
+
+  return (
+    <form className="medicine-form stock-action-form" onSubmit={handleSubmit}>
+      <h3 className="section-subtitle">
+        {isRefill ? 'Record a refill' : 'Adjust recorded stock'}
+      </h3>
+      {error && (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="form-grid">
+        <Input
+          label={
+            isRefill
+              ? `Refill quantity (${unit.plural})`
+              : `Adjustment quantity (${unit.plural}; use a minus sign to remove stock)`
+          }
+          inputMode="decimal"
+          type="text"
+          required
+          value={quantity}
+          onChange={(event) => setQuantity(event.target.value)}
+        />
+        <Input
+          label={isRefill ? 'Refill note (optional)' : 'Adjustment reason'}
+          required={!isRefill}
+          maxLength={240}
+          value={note}
+          onChange={(event) => setNote(event.target.value)}
+        />
+      </div>
+      <div className="medicine-actions">
+        <Button type="submit" disabled={busy}>
+          {isRefill ? 'Record refill' : 'Save adjustment'}
+        </Button>
+        <Button className="button-secondary" disabled={busy} onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
+    </form>
   )
 }
