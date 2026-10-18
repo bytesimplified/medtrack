@@ -2,6 +2,8 @@ import { liveQuery } from 'dexie'
 import {
   Archive,
   ArchiveRestore,
+  Bell,
+  BellOff,
   Pause,
   Pencil,
   Pill,
@@ -17,6 +19,7 @@ import { db } from '../database/db'
 import type {
   DoseSchedule,
   Medicine,
+  ReminderPreference,
   StockTransaction,
 } from '../database/models'
 import { formatQuantity, type Quantity } from '../database/quantity'
@@ -27,12 +30,21 @@ import {
 } from '../medicines/registration'
 import { adjustStock, listStockHistory, refillStock } from '../stock/ledger'
 import { calculateStockForecast, type StockForecast } from '../stock/forecast'
+import {
+  browserNotificationAdapter,
+  type ReminderPermission,
+} from '../reminders/platform'
+import {
+  requestNotificationPermission,
+  setScheduleReminderEnabled,
+} from '../reminders/service'
 import { MedicineForm } from './MedicineForm'
 import { ScheduleForm } from './ScheduleForm'
 
 interface MedicineRecord {
   medicine: Medicine
   schedules: DoseSchedule[]
+  reminderPreferences: ReminderPreference[]
   stockTransactions: StockTransaction[]
   forecast: StockForecast
 }
@@ -93,6 +105,25 @@ function isPausedToday(schedule: DoseSchedule) {
   )
 }
 
+function hasReminderTime(schedule: DoseSchedule) {
+  return (
+    schedule.timing.type === 'custom' || schedule.timing.reminderTime !== null
+  )
+}
+
+function permissionLabel(permission: ReminderPermission) {
+  switch (permission) {
+    case 'granted':
+      return 'allowed'
+    case 'denied':
+      return 'blocked in browser settings'
+    case 'unsupported':
+      return 'not supported in this browser'
+    case 'prompt':
+      return 'not requested'
+  }
+}
+
 export function Medicines() {
   const [records, setRecords] = useState<MedicineRecord[]>([])
   const [loading, setLoading] = useState(true)
@@ -110,14 +141,20 @@ export function Medicines() {
     kind: StockAction
   }>()
   const [busy, setBusy] = useState<string | null>(null)
+  const [notificationPermission, setNotificationPermission] =
+    useState<ReminderPermission>(() =>
+      browserNotificationAdapter.permissionStatus(),
+    )
 
   useEffect(() => {
     const query = liveQuery(async () => {
-      const [medicines, schedules, transactions] = await Promise.all([
-        db.medicines.toArray(),
-        db.doseSchedules.toArray(),
-        db.stockTransactions.toArray(),
-      ])
+      const [medicines, schedules, transactions, reminderPreferences] =
+        await Promise.all([
+          db.medicines.toArray(),
+          db.doseSchedules.toArray(),
+          db.stockTransactions.toArray(),
+          db.reminderPreferences.toArray(),
+        ])
       const now = new Date()
       return medicines
         .sort((left, right) => left.name.localeCompare(right.name))
@@ -131,6 +168,11 @@ export function Medicines() {
           return {
             medicine,
             schedules: medicineSchedules,
+            reminderPreferences: reminderPreferences.filter((preference) =>
+              medicineSchedules.some(
+                (schedule) => schedule.id === preference.scheduleId,
+              ),
+            ),
             stockTransactions: medicineTransactions,
             forecast: calculateStockForecast(
               medicine,
@@ -235,6 +277,41 @@ export function Medicines() {
         </p>
       )}
 
+      <section className="reminder-settings" aria-label="Reminder settings">
+        <div>
+          <h2 className="section-subtitle">Dose reminders</h2>
+          <p className="field-hint">
+            Browser permission: {permissionLabel(notificationPermission)}.
+            Reminders run while MedTrack is open in this browser.
+          </p>
+          {notificationPermission === 'denied' && (
+            <p className="field-hint">
+              Allow notifications for this site in your browser settings, then
+              reload MedTrack.
+            </p>
+          )}
+        </div>
+        {notificationPermission === 'prompt' && (
+          <Button
+            className="button-secondary button-small"
+            disabled={busy === 'notification-permission'}
+            onClick={() =>
+              void runAction('notification-permission', async () => {
+                const permission = await requestNotificationPermission()
+                setNotificationPermission(permission)
+                setNotice(
+                  permission === 'granted'
+                    ? 'Browser notifications are enabled.'
+                    : 'Browser notification permission was not granted.',
+                )
+              })
+            }
+          >
+            Enable browser notifications
+          </Button>
+        )}
+      </section>
+
       {formOpen && editingSchedule && (
         <ScheduleForm
           key={editingSchedule.schedule.id}
@@ -285,7 +362,13 @@ export function Medicines() {
       {!loading && !formOpen && records.length > 0 && (
         <div className="medicine-list">
           {records.map(
-            ({ medicine, schedules, stockTransactions, forecast }) => {
+            ({
+              medicine,
+              schedules,
+              reminderPreferences,
+              stockTransactions,
+              forecast,
+            }) => {
               const balance =
                 forecast.balance === null
                   ? null
@@ -334,6 +417,9 @@ export function Medicines() {
                     ) : (
                       schedules.map((schedule) => {
                         const paused = isPausedToday(schedule)
+                        const reminder = reminderPreferences.find(
+                          (preference) => preference.scheduleId === schedule.id,
+                        )
                         return (
                           <div className="schedule-row" key={schedule.id}>
                             <div>
@@ -409,6 +495,60 @@ export function Medicines() {
                               )}
                               {paused ? 'Resume' : 'Pause'}
                             </Button>
+                            {hasReminderTime(schedule) && reminder && (
+                              <Button
+                                className="button-secondary button-small"
+                                disabled={
+                                  busy === schedule.id ||
+                                  medicine.isArchived ||
+                                  schedule.effectiveTo !== null ||
+                                  notificationPermission === 'unsupported'
+                                }
+                                onClick={() =>
+                                  void runAction(schedule.id, async () => {
+                                    try {
+                                      const enabled =
+                                        await setScheduleReminderEnabled(
+                                          schedule.id,
+                                          !reminder.enabled,
+                                        )
+                                      setNotificationPermission(
+                                        browserNotificationAdapter.permissionStatus(),
+                                      )
+                                      setNotice(
+                                        enabled
+                                          ? 'Dose reminder enabled.'
+                                          : 'Dose reminder disabled.',
+                                      )
+                                    } finally {
+                                      setNotificationPermission(
+                                        browserNotificationAdapter.permissionStatus(),
+                                      )
+                                    }
+                                  })
+                                }
+                                aria-label={
+                                  (reminder.enabled
+                                    ? 'Disable reminder for '
+                                    : 'Enable reminder for ') + medicine.name
+                                }
+                              >
+                                {reminder.enabled ? (
+                                  <BellOff size={16} aria-hidden="true" />
+                                ) : (
+                                  <Bell size={16} aria-hidden="true" />
+                                )}
+                                {reminder.enabled
+                                  ? 'Disable reminder'
+                                  : 'Enable reminder'}
+                              </Button>
+                            )}
+                            {!hasReminderTime(schedule) && (
+                              <p className="field-hint">
+                                Add a custom or reminder clock time to enable
+                                notifications.
+                              </p>
+                            )}
                           </div>
                         )
                       })

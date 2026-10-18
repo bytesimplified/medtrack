@@ -6,15 +6,15 @@ This README is the project's standing overview and progress tracker. Keep the ov
 
 ## Project status
 
-| Item                         | Status                                         |
-| ---------------------------- | ---------------------------------------------- |
-| Target                       | MedTrack v1.0 MVP                              |
-| Planned implementation PRs   | 13                                             |
-| Completed and merged         | 4 / 13 in main; 7 / 13 merged in the stack     |
-| Current milestone            | PRs 05–07 merged in the stack; PR 08 in review |
-| Next planned work            | PR 09 — Reminders and Notifications            |
-| Functional medicine tracking | Available in the feature stack                 |
-| Android APK                  | Planned                                        |
+| Item                         | Status                                             |
+| ---------------------------- | -------------------------------------------------- |
+| Target                       | MedTrack v1.0 MVP                                  |
+| Planned implementation PRs   | 13                                                 |
+| Completed and merged         | 4 / 13 in main; 7 / 13 merged in the stack         |
+| Current milestone            | PRs 05–07 merged in the stack; PRs 08–09 in review |
+| Next planned work            | PR 10 — History and Analytics                      |
+| Functional medicine tracking | Available in the feature stack                     |
+| Android APK                  | Planned                                            |
 
 **Status key:** Planned → In progress → Ready for review → Done (merged to `main`). **Merged to stack** means a PR was merged into its parent feature branch but is not in `main` yet. **Partial (review)** means foundational work is ready for review, with later planned work still outstanding.
 
@@ -39,7 +39,7 @@ This README is the project's standing overview and progress tracker. Keep the ov
 | FR05      | Taken, Skipped, and Later actions; Later only snoozes reminders                       | 07, 09        | Partial (stack)  |
 | FR06      | Deduct stock only on confirmed Taken, using atomic and idempotent updates             | 07            | Merged to stack  |
 | FR07      | Stock refills, explicit adjustments, reconciliation, and refill history               | 08            | Ready for review |
-| FR08      | Scheduled dose reminders, permission handling, snooze, and rescheduling               | 09, 12        | Planned          |
+| FR08      | Scheduled dose reminders, permission handling, snooze, and rescheduling               | 09, 12        | Partial (review) |
 | FR09      | Low-stock alerts with duplicate-warning prevention                                    | 08, 09        | Partial (review) |
 | FR10      | Daily dose history with exact timestamps and correction audit trail                   | 07, 10        | Planned          |
 | FR11      | Calendar, weekly/monthly adherence, and medicine-specific history                     | 10            | Planned          |
@@ -70,7 +70,7 @@ The numbers below are roadmap identifiers. Actual GitHub PR links are added when
 | 06   | [Today's Dashboard](https://github.com/bytesimplified/medtrack/pull/6) · `feat/today-dashboard`                | Generate occurrences, timing groups, progress, and empty/paused/multi-dose states        | Merged to stack  |
 | 07   | [Dose Tracking and Stock Engine](https://github.com/bytesimplified/medtrack/pull/7) · `feat/dose-stock-engine` | Taken/Skip/Later, audit events, atomic ledger updates, Undo, and idempotency             | Merged to stack  |
 | 08   | [Stock Management](https://github.com/bytesimplified/medtrack/pull/8) · `feat/stock-management`                | Refills, adjustments, supply forecasting, and low-stock threshold detection              | Ready for review |
-| 09   | Reminders and Notifications · `feat/notifications`                                                             | Platform adapter, Android local reminders, snooze, cancellation, and low-stock rules     | Planned          |
+| 09   | [Reminders and Notifications](https://github.com/bytesimplified/medtrack/pull/9) · `feat/notifications`        | Browser adapter, permission handling, dose snooze, and low-stock alert rules             | Ready for review |
 | 10   | History and Analytics · `feat/analytics`                                                                       | Calendar, medicine history, taken/skipped/unconfirmed counts, and adherence              | Planned          |
 | 11   | Automated End-to-End Tests · `test/e2e-coverage`                                                               | Expand Playwright journeys beyond stock and reminder flows                               | Planned          |
 | 12   | Android Integration and APK CI · `feat/android-build`                                                          | Capacitor, app identity/permissions, emulator checks, debug APK workflow, signing guide  | Planned          |
@@ -78,11 +78,12 @@ The numbers below are roadmap identifiers. Actual GitHub PR links are added when
 
 **Milestone 1:** Functional browser MVP after PR 07 in the feature stack.  
 **Milestone 2:** v1.0 release candidate after PR 13, subject to final device validation and signing.  
-PR 09 implements the notification adapter; full Android integration and device validation follow in PR 12.
+PR 09 implements browser notification scheduling; Android background notifications and device validation follow in PR 12.
 
 ## Work ready for review
 
 - **PR 08:** Refill and adjustment ledger commands, supply forecasts, low-stock state, stock history, and isolated Playwright stock journeys. `npm run check` passes locally with 100 tests; browser journeys run in GitHub Actions.
+- **PR 09:** Permission-aware browser dose reminders, Later rescheduling, opt-in low-stock alerts, and isolated Playwright journeys. Local unit/build checks and the GitHub browser run are the review gates; Android background delivery remains in PR 12.
 - **Stack:** PRs 02–04 are merged into `main`. PRs 05–07 are closed as merged into their parent feature branches; their final CI checks passed. The feature stack is not in `main` yet.
 
 ## Completed work

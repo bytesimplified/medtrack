@@ -95,6 +95,7 @@ describe('medicine registration', () => {
       strength: '1000 IU',
       unit: 'tablet',
       lowStockDays: 5,
+      lowStockAlertsEnabled: false,
       isArchived: false,
       createdAt: now,
       updatedAt: now,
@@ -133,6 +134,40 @@ describe('medicine registration', () => {
     expect(result.initialStock).toBeNull()
     expect(await database.medicines.count()).toBe(1)
     expect(await database.stockTransactions.count()).toBe(0)
+  })
+
+  it('persists the explicit low-stock notification preference', async () => {
+    const database = makeDatabase()
+    const result = await registerMedicine(
+      input({ lowStockAlertsEnabled: true }),
+      database,
+      { now, idFactory: idFactory() },
+    )
+
+    expect(result.medicine.lowStockAlertsEnabled).toBe(true)
+
+    const details = {
+      name: result.medicine.name,
+      strength: result.medicine.strength ?? '',
+      description: result.medicine.description ?? '',
+      notes: result.medicine.notes ?? '',
+      unit: result.medicine.unit,
+      lowStockDays: result.medicine.lowStockDays,
+    }
+    const preserved = await updateMedicineDetails(
+      result.medicine.id,
+      details,
+      database,
+    )
+    expect(preserved.lowStockAlertsEnabled).toBe(true)
+
+    const disabled = await updateMedicineDetails(
+      result.medicine.id,
+      { ...details, lowStockAlertsEnabled: false },
+      database,
+    )
+
+    expect(disabled.lowStockAlertsEnabled).toBe(false)
   })
 
   it('keeps registered records across a database close and reopen', async () => {
