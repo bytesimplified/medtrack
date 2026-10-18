@@ -60,9 +60,11 @@ describe('backup, restore, and offline use', () => {
 
       await page.getByRole('button', { name: 'Archive', exact: true }).click()
       await page.getByText('Archived', { exact: true }).waitFor()
+      const fileChooserReady = page.waitForEvent('filechooser')
       await page.getByRole('button', { name: 'Restore backup' }).click()
+      const fileChooser = await fileChooserReady
       const confirm = page.waitForEvent('dialog')
-      await page.locator('input[type="file"]').setInputFiles({
+      await fileChooser.setFiles({
         name: 'medtrack-backup.json',
         mimeType: 'application/json',
         buffer: file,
