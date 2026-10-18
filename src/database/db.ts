@@ -1,4 +1,4 @@
-import Dexie, { type Table } from 'dexie'
+import Dexie, { type Table, type Transaction } from 'dexie'
 import type {
   DoseEvent,
   DoseOccurrence,
@@ -7,7 +7,7 @@ import type {
   ReminderPreference,
   StockTransaction,
 } from './models'
-import { DATABASE_NAME, DATABASE_VERSION, SCHEMA_V1 } from './schema'
+import { DATABASE_NAME, DATABASE_VERSION, SCHEMA_V1, SCHEMA_V2 } from './schema'
 
 function rejectHistoryMutation() {
   throw new Error(
@@ -55,10 +55,22 @@ export class MedTrackDatabase extends Dexie {
   doseEvents!: Table<DoseEvent, string>
   stockTransactions!: Table<StockTransaction, string>
   reminderPreferences!: Table<ReminderPreference, string>
+  private readonly historyRestoreTransactions = new WeakSet<Transaction>()
 
   constructor(name = DATABASE_NAME) {
     super(name)
-    this.version(DATABASE_VERSION).stores(SCHEMA_V1)
+    this.version(1).stores(SCHEMA_V1)
+    this.version(DATABASE_VERSION)
+      .stores(SCHEMA_V2)
+      .upgrade((transaction) =>
+        transaction
+          .table('medicines')
+          .toCollection()
+          .modify((medicine) => {
+            medicine.lowStockAlertsEnabled ??= false
+            medicine.lastLowStockAlertDate ??= null
+          }),
+      )
     // Dexie encodes schema versions as native IndexedDB version * 10.
     // Its compatibility fallback can open a newer DB; refuse writes by old code.
     this.on(
@@ -73,12 +85,29 @@ export class MedTrackDatabase extends Dexie {
       true,
     )
     this.doseEvents.hook('updating', rejectHistoryMutation)
-    this.doseEvents.hook('deleting', rejectHistoryMutation)
+    this.doseEvents.hook('deleting', (_key, _event, transaction) => {
+      this.rejectHistoryDeletionUnlessRestoring(transaction)
+    })
     this.stockTransactions.hook('updating', rejectHistoryMutation)
-    this.stockTransactions.hook('deleting', rejectHistoryMutation)
+    this.stockTransactions.hook('deleting', (_key, _entry, transaction) => {
+      this.rejectHistoryDeletionUnlessRestoring(transaction)
+    })
     this.stockTransactions.hook('creating', (_key, transaction) =>
       validateStockTransaction(transaction),
     )
+  }
+
+  /** Only the explicit, atomic backup-restore transaction may clear audit rows. */
+  authorizeHistoryRestore(transaction: Transaction): void {
+    if (transaction.db !== this) {
+      throw new Error('History restore requires this database transaction.')
+    }
+    this.historyRestoreTransactions.add(transaction)
+  }
+
+  private rejectHistoryDeletionUnlessRestoring(transaction: Transaction): void {
+    if (this.historyRestoreTransactions.has(transaction)) return
+    rejectHistoryMutation()
   }
 }
 
