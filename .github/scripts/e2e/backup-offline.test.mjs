@@ -28,7 +28,16 @@ describe('backup, restore, and offline use', () => {
     try {
       const page = await context.newPage()
       const pageErrors = []
+      const failedRequests = []
       page.on('pageerror', (error) => pageErrors.push(error.message))
+      page.on('console', (message) => {
+        if (message.type() === 'error') pageErrors.push(message.text())
+      })
+      page.on('requestfailed', (request) => {
+        failedRequests.push(
+          `${request.method()} ${request.url()}: ${request.failure()?.errorText}`,
+        )
+      })
       await page.goto('http://127.0.0.1:5184')
       await page.getByRole('heading', { name: 'Today', exact: true }).waitFor()
       await page.getByRole('link', { name: 'Medicines', exact: true }).click()
@@ -114,9 +123,24 @@ describe('backup, restore, and offline use', () => {
           text: document.body.innerText.slice(0, 500),
           controlled: navigator.serviceWorker.controller !== null,
           cachedIndex: Boolean(await caches.match('/index.html')),
+          assets: await Promise.all(
+            Array.from(
+              document.querySelectorAll(
+                'script[src], link[rel="stylesheet"][href]',
+              ),
+            ).map(async (element) => {
+              const url = new URL(
+                element.getAttribute('src') ||
+                  element.getAttribute('href') ||
+                  '',
+                location.origin,
+              ).toString()
+              return { url, cached: Boolean(await caches.match(url)) }
+            }),
+          ),
         }))
         assert.fail(
-          `Offline app shell did not render: ${JSON.stringify({ ...state, pageErrors })}`,
+          `Offline app shell did not render: ${JSON.stringify({ ...state, pageErrors, failedRequests })}`,
         )
       }
       await page.getByRole('link', { name: 'Insights', exact: true }).click()
