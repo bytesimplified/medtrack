@@ -134,8 +134,9 @@ describe('dose reminders in the browser', () => {
     }, notificationKey)
 
     await page.reload()
-    await page.getByRole('heading', { name: 'Today', exact: true }).waitFor()
-    await page.getByRole('link', { name: 'Medicines', exact: true }).click()
+    await page
+      .getByRole('heading', { name: 'Medicines', exact: true })
+      .waitFor()
     await page
       .getByRole('heading', { name: 'E2E low-stock medicine' })
       .waitFor()
@@ -166,8 +167,9 @@ describe('dose reminders in the browser', () => {
       .waitFor()
 
     await page.reload()
-    await page.getByRole('heading', { name: 'Today', exact: true }).waitFor()
-    await page.getByRole('link', { name: 'Medicines', exact: true }).click()
+    await page
+      .getByRole('heading', { name: 'Medicines', exact: true })
+      .waitFor()
     await page
       .getByRole('button', {
         name: 'Disable reminder for E2E reminder medicine',
