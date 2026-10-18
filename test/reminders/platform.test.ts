@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { localDateTimeToInstant } from './platform'
+import { localDateTimeToInstant } from '../../src/reminders/platform'
 
 describe('local reminder time conversion', () => {
   it('resolves a clock time in the schedule timezone', () => {

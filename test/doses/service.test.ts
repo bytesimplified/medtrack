@@ -1,19 +1,19 @@
 import 'fake-indexeddb/auto'
 import { afterEach, describe, expect, it } from 'vitest'
-import { MedTrackDatabase } from '../database/db'
+import { MedTrackDatabase } from '../../src/database/db'
 import {
   initialStock,
   medicine,
   occurrence,
   schedule,
 } from '../database/fixtures.test-support'
-import { parseQuantity } from '../database/quantity'
+import { parseQuantity } from '../../src/database/quantity'
 import {
   markDoseSkipped,
   markDoseTaken,
   snoozeDoseLater,
   undoDose,
-} from './service'
+} from '../../src/doses/service'
 
 const now = '2026-10-17T08:30:00.000Z'
 const databases: MedTrackDatabase[] = []

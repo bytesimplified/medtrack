@@ -1,19 +1,19 @@
 import 'fake-indexeddb/auto'
 import { afterEach, describe, expect, it } from 'vitest'
-import { MedTrackDatabase } from '../database/db'
+import { MedTrackDatabase } from '../../src/database/db'
 import type {
   LocalNotification,
   NotificationAdapter,
   ReminderPermission,
-} from './platform'
-import { registerMedicine } from '../medicines/registration'
-import { generateOccurrences } from '../scheduling/engine'
-import { snoozeDoseLater } from '../doses/service'
+} from '../../src/reminders/platform'
+import { registerMedicine } from '../../src/medicines/registration'
+import { generateOccurrences } from '../../src/scheduling/engine'
+import { snoozeDoseLater } from '../../src/doses/service'
 import {
   requestNotificationPermission,
   setScheduleReminderEnabled,
   synchronizeReminders,
-} from './service'
+} from '../../src/reminders/service'
 
 const now = new Date('2026-10-18T08:00:00.000Z')
 const databases: MedTrackDatabase[] = []

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { medicine, schedule } from '../database/fixtures.test-support'
-import { parseQuantity } from '../database/quantity'
-import type { DoseSchedule } from '../database/models'
-import { generateOccurrences } from './engine'
+import { parseQuantity } from '../../src/database/quantity'
+import type { DoseSchedule } from '../../src/database/models'
+import { generateOccurrences } from '../../src/scheduling/engine'
 
 const timestamp = '2026-10-18T10:15:00.000Z'
 

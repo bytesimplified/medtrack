@@ -7,11 +7,15 @@ import {
   event,
   initialStock,
 } from './fixtures.test-support'
-import type { StockTransaction } from './models'
-import { parseQuantity, type Quantity } from './quantity'
+import type { StockTransaction } from '../../src/database/models'
+import { parseQuantity, type Quantity } from '../../src/database/quantity'
 import { afterEach, expect, it } from 'vitest'
-import { MedTrackDatabase } from './db'
-import { DATABASE_VERSION, SCHEMA_V1, SCHEMA_V2 } from './schema'
+import { MedTrackDatabase } from '../../src/database/db'
+import {
+  DATABASE_VERSION,
+  SCHEMA_V1,
+  SCHEMA_V2,
+} from '../../src/database/schema'
 const databases: MedTrackDatabase[] = []
 function database() {
   const db = new MedTrackDatabase(`medtrack-test-${crypto.randomUUID()}`)

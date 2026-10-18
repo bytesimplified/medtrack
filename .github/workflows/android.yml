@@ -116,4 +116,4 @@ jobs:
           exit 1
 
       - name: Install and launch MedTrack on emulator
-        run: bash scripts/android/ci-emulator-smoke.sh android/app/build/outputs/apk/debug/app-debug.apk
+        run: bash test/e2e/android/emulator-smoke.sh android/app/build/outputs/apk/debug/app-debug.apk

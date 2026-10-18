@@ -1,12 +1,12 @@
 import 'fake-indexeddb/auto'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { afterAll, expect, it } from 'vitest'
-import { db } from '../database/db'
+import { db } from '../../src/database/db'
 import {
   medicine as fixtureMedicine,
   schedule,
 } from '../database/fixtures.test-support'
-import { Insights } from './Insights'
+import { Insights } from '../../src/pages/Insights'
 
 function dateString(date: Date) {
   return new Date(date.getTime() - date.getTimezoneOffset() * 60_000)

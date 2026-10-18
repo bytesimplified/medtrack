@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
-import { ThemePicker } from './ThemePicker'
-import { THEME_KEY } from './useTheme'
+import { ThemePicker } from '../../src/theme/ThemePicker'
+import { THEME_KEY } from '../../src/theme/useTheme'
 let dark = false
 let listeners: Set<() => void>
 beforeEach(() => {

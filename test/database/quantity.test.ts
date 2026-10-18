@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { formatQuantity, parseQuantity, type Quantity } from './quantity'
+import {
+  formatQuantity,
+  parseQuantity,
+  type Quantity,
+} from '../../src/database/quantity'
 describe('fixed-precision quantities', () => {
   it.each([
     '0',

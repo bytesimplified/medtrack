@@ -1,14 +1,14 @@
 import 'fake-indexeddb/auto'
 import { afterEach, describe, expect, it } from 'vitest'
-import { MedTrackDatabase } from '../database/db'
+import { MedTrackDatabase } from '../../src/database/db'
 import {
   initialStock,
   medicine,
   schedule,
 } from '../database/fixtures.test-support'
-import type { DoseSchedule } from '../database/models'
-import { getTodayDashboard } from './dashboard'
-import { ensureTodayOccurrences } from './occurrences'
+import type { DoseSchedule } from '../../src/database/models'
+import { getTodayDashboard } from '../../src/today/dashboard'
+import { ensureTodayOccurrences } from '../../src/today/occurrences'
 
 const instant = new Date('2026-10-17T08:30:00.000Z')
 const databases: MedTrackDatabase[] = []

@@ -3,8 +3,11 @@ import type {
   LocalNotificationsPlugin,
   ScheduleOptions,
 } from '@capacitor/local-notifications'
-import type { LocalNotification } from './platform'
-import { CapacitorNotificationAdapter, nativeNotificationId } from './native'
+import type { LocalNotification } from '../../src/reminders/platform'
+import {
+  CapacitorNotificationAdapter,
+  nativeNotificationId,
+} from '../../src/reminders/native'
 
 function notification(id = 'dose-vitamin-d-2026-10-18'): LocalNotification {
   return {

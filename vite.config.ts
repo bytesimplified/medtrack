@@ -82,8 +82,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), offlineAppShell()],
   test: {
     environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.test.{ts,tsx}'],
+    setupFiles: ['./test/setup.ts'],
+    include: ['test/**/*.test.{ts,tsx}'],
     clearMocks: true,
   },
 })

@@ -37,7 +37,7 @@ Existing completed occurrences must never be overwritten by regeneration.
 
 ## Verification
 
-`npm test -- src/scheduling/engine.test.ts` covers daily, alternate-day,
+`npm test -- test/scheduling/engine.test.ts` covers daily, alternate-day,
 selected-weekday and every-X-days recurrence; inclusive and exclusive
 boundaries; pauses; multiple dose slots; leap day; DST; stable snapshots; and
 invalid dates, times, recurrence values, quantities, timezones, and oversized

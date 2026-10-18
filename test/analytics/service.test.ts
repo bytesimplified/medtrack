@@ -1,15 +1,19 @@
 import 'fake-indexeddb/auto'
 import { afterEach, expect, it } from 'vitest'
-import { MedTrackDatabase } from '../database/db'
+import { MedTrackDatabase } from '../../src/database/db'
 import {
   event as fixtureEvent,
   medicine as fixtureMedicine,
   schedule as fixtureSchedule,
 } from '../database/fixtures.test-support'
-import type { DoseEvent, DoseOccurrence, Medicine } from '../database/models'
-import { parseQuantity } from '../database/quantity'
-import { generateOccurrences } from '../scheduling/engine'
-import { getAnalyticsMonth } from './service'
+import type {
+  DoseEvent,
+  DoseOccurrence,
+  Medicine,
+} from '../../src/database/models'
+import { parseQuantity } from '../../src/database/quantity'
+import { generateOccurrences } from '../../src/scheduling/engine'
+import { getAnalyticsMonth } from '../../src/analytics/service'
 
 const databases: MedTrackDatabase[] = []
 const now = new Date('2026-10-17T12:00:00.000Z')

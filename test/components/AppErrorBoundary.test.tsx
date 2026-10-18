@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { beforeEach, expect, it, vi } from 'vitest'
-import { AppErrorBoundary } from './AppErrorBoundary'
+import { AppErrorBoundary } from '../../src/components/AppErrorBoundary'
 
 const consoleError = vi
   .spyOn(console, 'error')

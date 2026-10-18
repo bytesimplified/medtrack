@@ -1,9 +1,9 @@
 import 'fake-indexeddb/auto'
 import { afterEach, describe, expect, it } from 'vitest'
-import { MedTrackDatabase } from '../database/db'
-import type { LocalDate } from '../database/models'
-import { formatQuantity, parseQuantity } from '../database/quantity'
-import { generateOccurrences } from '../scheduling/engine'
+import { MedTrackDatabase } from '../../src/database/db'
+import type { LocalDate } from '../../src/database/models'
+import { formatQuantity, parseQuantity } from '../../src/database/quantity'
+import { generateOccurrences } from '../../src/scheduling/engine'
 import {
   localDateInTimeZone,
   registerMedicine,
@@ -11,8 +11,8 @@ import {
   setSchedulePaused,
   updateMedicineDetails,
   updateScheduleVersion,
-} from './registration'
-import type { MedicineRegistrationInput } from './registration'
+} from '../../src/medicines/registration'
+import type { MedicineRegistrationInput } from '../../src/medicines/registration'
 
 const now = '2026-10-18T10:15:00.000Z'
 const databases: MedTrackDatabase[] = []

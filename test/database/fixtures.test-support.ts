@@ -4,8 +4,8 @@ import type {
   DoseSchedule,
   Medicine,
   StockTransaction,
-} from './models'
-import { parseQuantity } from './quantity'
+} from '../../src/database/models'
+import { parseQuantity } from '../../src/database/quantity'
 const now = '2026-10-17T08:30:00.000Z'
 export function medicine(): Medicine {
   return {

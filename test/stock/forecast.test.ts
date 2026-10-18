@@ -4,9 +4,9 @@ import {
   medicine as fixtureMedicine,
   schedule as fixtureSchedule,
 } from '../database/fixtures.test-support'
-import { parseQuantity } from '../database/quantity'
-import type { StockTransaction } from '../database/models'
-import { calculateStockForecast } from './forecast'
+import { parseQuantity } from '../../src/database/quantity'
+import type { StockTransaction } from '../../src/database/models'
+import { calculateStockForecast } from '../../src/stock/forecast'
 
 const now = new Date('2026-10-17T08:30:00.000Z')
 

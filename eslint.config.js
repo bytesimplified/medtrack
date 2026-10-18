@@ -22,7 +22,7 @@ export default defineConfig([
     languageOptions: { globals: globals.node },
   },
   {
-    files: ['.github/scripts/*.mjs'],
+    files: ['test/e2e/**/*.mjs'],
     extends: [js.configs.recommended],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },

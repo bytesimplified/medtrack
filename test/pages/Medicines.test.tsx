@@ -1,8 +1,8 @@
 import 'fake-indexeddb/auto'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterAll, expect, it } from 'vitest'
-import { db } from '../database/db'
-import { Medicines } from './Medicines'
+import { db } from '../../src/database/db'
+import { Medicines } from '../../src/pages/Medicines'
 
 afterAll(() => {
   db.close()

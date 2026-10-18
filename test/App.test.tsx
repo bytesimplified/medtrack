@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
-import App from './App'
+import App from '../src/App'
 function navigate(hash: string) {
   act(() => {
     window.history.replaceState(null, '', hash)

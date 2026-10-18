@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto'
 import { afterEach, expect, it } from 'vitest'
-import { MedTrackDatabase } from '../database/db'
+import { MedTrackDatabase } from '../../src/database/db'
 import {
   event,
   initialStock,
@@ -8,13 +8,13 @@ import {
   occurrence,
   schedule,
 } from '../database/fixtures.test-support'
-import type { ReminderPreference } from '../database/models'
+import type { ReminderPreference } from '../../src/database/models'
 import {
   BackupFormatError,
   createBackup,
   restoreBackup,
   serializeBackup,
-} from './backup'
+} from '../../src/backup/backup'
 
 const databases: MedTrackDatabase[] = []
 

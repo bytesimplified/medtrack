@@ -27,8 +27,8 @@ npm ci
 npm run build
 npm install --no-save --package-lock=false playwright@1.62.1
 npx playwright install chromium
-node .github/scripts/ui-smoke.mjs
-node --test .github/scripts/e2e/*.test.mjs
+npm run test:e2e:smoke
+npm run test:e2e:journeys
 ```
 
 The CI workflow installs Playwright without adding it to the application
