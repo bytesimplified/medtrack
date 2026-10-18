@@ -6,6 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "cap:sync": "cap sync android",
+    "android:sync": "npm run build && npm run cap:sync",
+    "android:build:debug": "npm run android:sync && cd android && ./gradlew assembleDebug",
+    "android:install:debug": "npm run android:build:debug && adb install -r android/app/build/outputs/apk/debug/app-debug.apk",
+    "android:open": "cap open android",
     "preview": "vite preview",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
@@ -16,12 +21,16 @@
     "check": "npm run format:check && npm run lint && npm run test && npm run build"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/local-notifications": "^8.3.1",
     "dexie": "^4.4.6",
     "lucide-react": "^1.59.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",

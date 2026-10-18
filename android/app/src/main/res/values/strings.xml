@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MedTrack</string>
+    <string name="title_activity_main">MedTrack</string>
+    <string name="package_name">com.bytesimplified.medtrack</string>
+    <string name="custom_url_scheme">com.bytesimplified.medtrack</string>
+</resources>
