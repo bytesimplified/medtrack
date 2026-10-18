@@ -6,15 +6,15 @@ This README is the project's standing overview and progress tracker. Keep the ov
 
 ## Project status
 
-| Item                         | Status                                       |
-| ---------------------------- | -------------------------------------------- |
-| Target                       | MedTrack v1.0 MVP                            |
-| Planned implementation PRs   | 13                                           |
-| Completed and merged         | 9 / 13 in main                               |
-| Current milestone            | Plans 10–13 in progress; browser MVP on main |
-| Next planned work            | Android phone and release validation         |
-| Functional medicine tracking | Available on main                            |
-| Android APK                  | Debug APK CI in progress (PR #16)            |
+| Item                         | Status                                                  |
+| ---------------------------- | ------------------------------------------------------- |
+| Target                       | MedTrack v1.0 MVP                                       |
+| Planned implementation PRs   | 13                                                      |
+| Completed and merged         | 13 / 13 in main                                         |
+| Current milestone            | All implementation PRs merged; phone validation pending |
+| Next planned work            | Android phone and release validation                    |
+| Functional medicine tracking | Available on main                                       |
+| Android APK                  | Debug APK available from main Android workflow          |
 
 **Status key:** Planned → In progress → Ready for review → Done (merged to `main`). **Partial** means some functionality remains on a later roadmap item.
 
@@ -30,31 +30,31 @@ This README is the project's standing overview and progress tracker. Keep the ov
 
 ## Feature checklist
 
-| ID        | Feature                                                                               | Planned PR(s)  | Status                                          |
-| --------- | ------------------------------------------------------------------------------------- | -------------- | ----------------------------------------------- |
-| FR01      | Register medicine name, strength, description, dose quantity, unit, and initial stock | 03, 05         | Done (merged)                                   |
-| FR02      | Daily, alternate-day, selected-weekday, and every-X-days schedules                    | 04, 05         | Done (merged)                                   |
-| FR03      | Meal windows or custom times, multiple daily doses, and start/end dates               | 04, 05         | Done (merged)                                   |
-| FR04      | Today's scheduled medicines, grouped by timing with progress and stock                | 06             | Done (merged)                                   |
-| FR05      | Taken, Skipped, and Later actions; Later only snoozes reminders                       | 07, 09         | Done (merged)                                   |
-| FR06      | Deduct stock only on confirmed Taken, using atomic and idempotent updates             | 07             | Done (merged)                                   |
-| FR07      | Stock refills, explicit adjustments, reconciliation, and refill history               | 08             | Done (merged)                                   |
-| FR08      | Scheduled dose reminders, permission handling, snooze, and rescheduling               | 09, 12         | Browser done; Android in progress (PR #16)      |
-| FR09      | Low-stock alerts with duplicate-warning prevention                                    | 08, 09         | Done (merged)                                   |
-| FR10      | Daily dose history with exact timestamps and correction audit trail                   | 07, 10         | In progress (PR #14)                            |
-| FR11      | Calendar, weekly/monthly adherence, and medicine-specific history                     | 10             | In progress (PR #14)                            |
-| FR12      | Edit, pause, and archive medicines/schedules while preserving history                 | 04, 05         | Done (merged)                                   |
-| FR13      | Undo incorrect dose entries and reverse the matching stock transaction                | 07             | Done (merged)                                   |
-| FR14      | Estimate remaining supply and stock-out date using upcoming schedules                 | 08             | Done (merged)                                   |
-| FR15      | Local persistence and offline access without a mandatory account                      | 03, 13         | Offline shell and backup in progress (PR #17)   |
-| UX01      | Responsive Today / Medicines / Insights navigation and reusable controls              | 02             | Done (merged)                                   |
-| UX02      | Light/dark themes and accessible layouts and tap targets                              | 02, 13         | Recovery and backup accessibility in PR #17     |
-| DATA01    | Export, backup, restore, and migration verification                                   | 13             | In progress (PR #17)                            |
-| QA01      | PC development, formatting, linting, startup test, and build CI                       | 01             | Done                                            |
-| QA02      | Domain tests for schedules, stock, corrections, and analytics                         | 04–10          | Unit tests done; analytics coverage in progress |
-| QA03      | Automated browser end-to-end tests on pull requests                                   | 08, 09, 11, 13 | Stock/history pass; backup/offline in PR #17    |
-| ANDROID01 | Capacitor integration, emulator checks, and automated debug APK builds                | 12             | In progress (PR #16)                            |
-| RELEASE01 | Physical-device validation, signing documentation, and release readiness              | 12, 13         | Signing guide PR #16; release checklist PR #17  |
+| ID        | Feature                                                                               | Planned PR(s)  | Status                                           |
+| --------- | ------------------------------------------------------------------------------------- | -------------- | ------------------------------------------------ |
+| FR01      | Register medicine name, strength, description, dose quantity, unit, and initial stock | 03, 05         | Done (merged)                                    |
+| FR02      | Daily, alternate-day, selected-weekday, and every-X-days schedules                    | 04, 05         | Done (merged)                                    |
+| FR03      | Meal windows or custom times, multiple daily doses, and start/end dates               | 04, 05         | Done (merged)                                    |
+| FR04      | Today's scheduled medicines, grouped by timing with progress and stock                | 06             | Done (merged)                                    |
+| FR05      | Taken, Skipped, and Later actions; Later only snoozes reminders                       | 07, 09         | Done (merged)                                    |
+| FR06      | Deduct stock only on confirmed Taken, using atomic and idempotent updates             | 07             | Done (merged)                                    |
+| FR07      | Stock refills, explicit adjustments, reconciliation, and refill history               | 08             | Done (merged)                                    |
+| FR08      | Scheduled dose reminders, permission handling, snooze, and rescheduling               | 09, 12         | Done (merged); physical-device checks pending    |
+| FR09      | Low-stock alerts with duplicate-warning prevention                                    | 08, 09         | Done (merged)                                    |
+| FR10      | Daily dose history with exact timestamps and correction audit trail                   | 07, 10         | Done (merged)                                    |
+| FR11      | Calendar, weekly/monthly adherence, and medicine-specific history                     | 10             | Done (merged)                                    |
+| FR12      | Edit, pause, and archive medicines/schedules while preserving history                 | 04, 05         | Done (merged)                                    |
+| FR13      | Undo incorrect dose entries and reverse the matching stock transaction                | 07             | Done (merged)                                    |
+| FR14      | Estimate remaining supply and stock-out date using upcoming schedules                 | 08             | Done (merged)                                    |
+| FR15      | Local persistence and offline access without a mandatory account                      | 03, 13         | Done (merged)                                    |
+| UX01      | Responsive Today / Medicines / Insights navigation and reusable controls              | 02             | Done (merged)                                    |
+| UX02      | Light/dark themes and accessible layouts and tap targets                              | 02, 13         | Implemented; physical-device review pending      |
+| DATA01    | Export, backup, restore, and migration verification                                   | 13             | Done (merged)                                    |
+| QA01      | PC development, formatting, linting, startup test, and build CI                       | 01             | Done                                             |
+| QA02      | Domain tests for schedules, stock, corrections, and analytics                         | 04–10          | Done (125 unit/component tests)                  |
+| QA03      | Automated browser end-to-end tests on pull requests                                   | 08, 09, 11, 13 | Done; stock, history, backup/offline journeys    |
+| ANDROID01 | Capacitor integration, emulator checks, and automated debug APK builds                | 12             | Done (merged)                                    |
+| RELEASE01 | Physical-device validation, signing documentation, and release readiness              | 12, 13         | Guides merged; device validation/signing pending |
 
 ## Planned PRs
 
@@ -71,10 +71,10 @@ The numbers below are roadmap identifiers. Actual GitHub PR links are added when
 | 07   | [Dose Tracking and Stock Engine](https://github.com/bytesimplified/medtrack/pull/7) · `feat/dose-stock-engine` | Taken/Skip/Later, audit events, atomic ledger updates, Undo, and idempotency             | Done (merged) |
 | 08   | [Stock Management](https://github.com/bytesimplified/medtrack/pull/8) · `feat/stock-management`                | Refills, adjustments, supply forecasting, and low-stock threshold detection              | Done (merged) |
 | 09   | [Reminders and Notifications](https://github.com/bytesimplified/medtrack/pull/9) · `feat/notifications`        | Browser adapter, permission handling, dose snooze, and low-stock alert rules             | Done (merged) |
-| 10   | [History and Analytics](https://github.com/bytesimplified/medtrack/pull/14) · `feat/analytics`                 | Calendar, medicine history, taken/skipped/unconfirmed counts, and adherence              | In progress   |
-| 11   | [Automated End-to-End Tests](https://github.com/bytesimplified/medtrack/pull/15) · `test/e2e-coverage`         | Expand Playwright journeys beyond stock and reminder flows                               | In progress   |
-| 12   | [Android Integration and APK CI](https://github.com/bytesimplified/medtrack/pull/16) · `feat/android-build`    | Capacitor, app identity/permissions, emulator checks, debug APK workflow, signing guide  | In progress   |
-| 13   | [Backup, Polish and Release](https://github.com/bytesimplified/medtrack/pull/17) · `release/v1-polish`         | Export/restore, offline/error handling, accessibility, migrations, and release checklist | In progress   |
+| 10   | [History and Analytics](https://github.com/bytesimplified/medtrack/pull/14) · `feat/analytics`                 | Calendar, medicine history, taken/skipped/unconfirmed counts, and adherence              | Done (merged) |
+| 11   | [Automated End-to-End Tests](https://github.com/bytesimplified/medtrack/pull/15) · `test/e2e-coverage`         | Expand Playwright journeys beyond stock and reminder flows                               | Done (merged) |
+| 12   | [Android Integration and APK CI](https://github.com/bytesimplified/medtrack/pull/16) · `feat/android-build`    | Capacitor, app identity/permissions, emulator checks, debug APK workflow, signing guide  | Done (merged) |
+| 13   | [Backup, Polish and Release](https://github.com/bytesimplified/medtrack/pull/17) · `release/v1-polish`         | Export/restore, offline/error handling, accessibility, migrations, and release checklist | Done (merged) |
 
 **Milestone 1:** Functional browser MVP delivered to `main` through PR 11, with stock and reminder journeys in CI.  
 **Milestone 2:** v1.0 release candidate after PR 13, subject to final device validation and signing.  
@@ -84,7 +84,9 @@ PR 09 implements browser notification scheduling. PR 12 adds Android support; ph
 
 - The feature stack containing PRs 05–09 was integrated into `main` through [PR 11](https://github.com/bytesimplified/medtrack/pull/11), preserving the feature commits.
 - [GitHub Actions run 39101334513](https://github.com/bytesimplified/medtrack/actions/runs/39101334513) passed formatting, lint, unit tests, TypeScript, production build, desktop/mobile browser smoke, and stock/reminder end-to-end journeys.
-- Browser medicine tracking, stock forecasts, and browser reminders are available on `main`. Android background reminders and APK builds are in progress under roadmap item 12.
+- Browser medicine tracking, stock forecasts, and browser reminders are available on `main`. Native Android reminders and debug APK CI are merged; physical-device checks remain pending.
+- Roadmap items 10–13 are merged through GitHub PRs [#14](https://github.com/bytesimplified/medtrack/pull/14), [#15](https://github.com/bytesimplified/medtrack/pull/15), [#16](https://github.com/bytesimplified/medtrack/pull/16), and [#17](https://github.com/bytesimplified/medtrack/pull/17), preserving the feature commits.
+- The final stack passed [quality and browser E2E](https://github.com/bytesimplified/medtrack/actions/runs/39113291835), including 125 unit/component tests and backup/restore/offline journeys, plus [Android build and emulator installation/launch](https://github.com/bytesimplified/medtrack/actions/runs/39113291828). Each push to `main` rebuilds the debug APK for phone testing.
 
 ## Completed work
 
@@ -111,7 +113,7 @@ PR 09 implements browser notification scheduling. PR 12 adds Android support; ph
 
 **Verified:** clean `npm ci`, formatting, zero-warning lint, 1 startup test, TypeScript, production build, development-server startup, and `git diff --check`.
 
-The initially empty repository received a README-only bootstrap commit to establish `main`. PR 01 established the project foundation; PRs 02–09 subsequently delivered the browser MVP. PRs 10–12 are in progress; backup, offline polish, physical-device checks, and release readiness follow in PR 13.
+The initially empty repository received a README-only bootstrap commit to establish `main`. PR 01 established the project foundation; PRs 02–09 subsequently delivered the browser MVP. PRs 10–13 have also been merged, adding analytics, broader E2E coverage, Android APK CI, backup, and offline recovery. Physical-device validation and release signing remain pending.
 
 ### PRs 05–09 — Browser medicine-tracking MVP
 
@@ -122,16 +124,23 @@ The initially empty repository received a README-only bootstrap commit to establ
 - [x] Integrate the completed feature stack into `main` through [PR 11](https://github.com/bytesimplified/medtrack/pull/11).
 - [x] Pass [integration CI and E2E run](https://github.com/bytesimplified/medtrack/actions/runs/39101334513).
 
+### PRs 10–13 — Analytics, Android, and backup
+
+- [x] Merge history/calendar analytics and expanded dose/history E2E journeys through [PR #14](https://github.com/bytesimplified/medtrack/pull/14) and [PR #15](https://github.com/bytesimplified/medtrack/pull/15).
+- [x] Merge Capacitor Android integration, native reminders, APK CI, and signing guidance through [PR #16](https://github.com/bytesimplified/medtrack/pull/16).
+- [x] Merge versioned export/restore, database migration, offline recovery, accessibility polish, and release checklists through [PR #17](https://github.com/bytesimplified/medtrack/pull/17).
+- [ ] Complete [physical-device and release validation](docs/release-checklist.md), including phone notifications, backup/restore, and release signing.
+
 ## Architecture and data rules
 
-| Area           | Approach                                                |
-| -------------- | ------------------------------------------------------- |
-| Web app        | React + TypeScript + Vite                               |
-| Styling        | Tailwind CSS + Lucide icons                             |
-| Local database | IndexedDB with Dexie                                    |
-| Android        | Capacitor 8 + local notifications (PR 12)               |
-| Testing        | Vitest/browser E2E; Android emulator checks in PR 12    |
-| Delivery       | Web and debug APK workflows; backup/offline CI in PR 13 |
+| Area           | Approach                                        |
+| -------------- | ----------------------------------------------- |
+| Web app        | React + TypeScript + Vite                       |
+| Styling        | Tailwind CSS + Lucide icons                     |
+| Local database | IndexedDB with Dexie                            |
+| Android        | Capacitor 8 + local notifications               |
+| Testing        | Vitest, browser E2E, and Android emulator smoke |
+| Delivery       | Web and debug APK workflows; backup/offline CI  |
 
 - Keep scheduling, dose logging, stock calculation, analytics, and platform notifications separate from UI.
 - Model Medicine, versioned DoseSchedule, DoseOccurrence, append-only DoseEvent, StockTransaction, and reminder preferences.
@@ -158,7 +167,7 @@ Use Node.js 24 LTS (24.13 or newer within version 24). Open the URL printed by V
 npm run check
 ```
 
-This runs formatting, linting, tests, typechecking, and the production build. Browser development covers shared logic; emulator and physical-device checks will validate Android behavior.
+This runs formatting, linting, tests, typechecking, and the production build. Browser CI covers shared logic and desktop/mobile journeys. Android CI installs and launches the APK on an emulator; the physical-device checklist remains to be completed.
 
 ## Commands
 
