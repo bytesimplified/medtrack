@@ -26,6 +26,7 @@ export interface MedicineRegistrationInput {
   unit: MedicineUnit
   initialStock: string
   lowStockDays: number
+  lowStockAlertsEnabled?: boolean
   recurrence: Recurrence
   startDate: LocalDate
   endDate: LocalDate | null
@@ -35,7 +36,13 @@ export interface MedicineRegistrationInput {
 
 export type MedicineDetails = Pick<
   Medicine,
-  'name' | 'strength' | 'description' | 'notes' | 'unit' | 'lowStockDays'
+  | 'name'
+  | 'strength'
+  | 'description'
+  | 'notes'
+  | 'unit'
+  | 'lowStockDays'
+  | 'lowStockAlertsEnabled'
 >
 
 export interface ScheduleVersionInput {
@@ -95,6 +102,14 @@ function validateDetails(details: MedicineDetails): MedicineDetails {
       'Low-stock days must be a whole number from 0 to 3650.',
     )
   }
+  if (
+    details.lowStockAlertsEnabled !== undefined &&
+    typeof details.lowStockAlertsEnabled !== 'boolean'
+  ) {
+    throw new RangeError(
+      'Low-stock alert preference must be enabled or disabled.',
+    )
+  }
   return {
     name,
     strength: optionalText(details.strength ?? '', 'Strength', 120),
@@ -102,6 +117,7 @@ function validateDetails(details: MedicineDetails): MedicineDetails {
     notes: optionalText(details.notes ?? '', 'Notes', 1000),
     unit: details.unit,
     lowStockDays: details.lowStockDays,
+    lowStockAlertsEnabled: details.lowStockAlertsEnabled ?? false,
   }
 }
 
@@ -281,7 +297,15 @@ export async function updateMedicineDetails(
           )
         }
       }
-      updated = { ...current, ...validated, updatedAt: now }
+      updated = {
+        ...current,
+        ...validated,
+        lowStockAlertsEnabled:
+          details.lowStockAlertsEnabled ??
+          current.lowStockAlertsEnabled ??
+          false,
+        updatedAt: now,
+      }
       await database.medicines.put(updated)
     },
   )

@@ -24,6 +24,10 @@ export interface Medicine {
   notes: string | null
   unit: MedicineUnit
   lowStockDays: number
+  /** Notifications are opt-in; omitted on older version-1 records means false. */
+  lowStockAlertsEnabled?: boolean
+  /** Prevents repeated low-stock notifications on the same medicine-local day. */
+  lastLowStockAlertDate?: LocalDate | null
   isArchived: boolean
   archivedAt: Timestamp | null
   createdAt: Timestamp
