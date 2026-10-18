@@ -74,3 +74,41 @@ export interface ReminderPreference {
   updatedAt: Timestamp
   // Clock time is owned by DoseSchedule.timing; permission is last observed only.
 }
+
+export type DoseStatus = 'pending' | 'taken' | 'skipped'
+
+export interface DoseOccurrence {
+  id: Id
+  scheduleId: Id // Version-specific; unique together with scheduledDate.
+  medicineId: Id
+  scheduledDate: LocalDate
+  /** Snapshot fields preserve history after medicine and schedule edits. */
+  medicineName: string
+  unit: MedicineUnit
+  scheduledQuantity: Quantity
+  timing: DoseTiming
+  timezone: string
+  status: DoseStatus
+  takenAt: Timestamp | null
+  quantityTaken: Quantity | null
+  snoozedUntil: Timestamp | null // Does not change pending/taken/skipped.
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+/** Append-only record. Undo/correction appends a new event, never edits one. */
+export interface DoseEvent {
+  readonly id: Id
+  readonly operationId: Id // Unique retry token for a logical command.
+  readonly occurrenceId: Id
+  readonly action: 'taken' | 'skipped' | 'undone' | 'corrected'
+  readonly previousStatus: DoseStatus
+  readonly newStatus: DoseStatus
+  readonly previousQuantityTaken: Quantity | null
+  readonly newQuantityTaken: Quantity | null
+  readonly previousTakenAt: Timestamp | null
+  readonly newTakenAt: Timestamp | null
+  readonly reversesEventId: Id | null
+  readonly recordedAt: Timestamp
+  readonly note: string | null
+}
