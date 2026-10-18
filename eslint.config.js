@@ -21,5 +21,10 @@ export default defineConfig([
     files: ['*.config.{js,ts}'],
     languageOptions: { globals: globals.node },
   },
+  {
+    files: ['.github/scripts/*.mjs'],
+    extends: [js.configs.recommended],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
   prettier,
 ])

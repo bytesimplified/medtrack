@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { ThemePicker } from './theme/ThemePicker'
 import { AppShell } from './components/AppShell'
 import { Navigation } from './components/Navigation'
 import { usePage } from './navigation/usePage'
@@ -17,7 +18,10 @@ export default function App() {
     }
   }, [page])
   return (
-    <AppShell navigation={<Navigation page={page} />}>
+    <AppShell
+      navigation={<Navigation page={page} />}
+      settings={<ThemePicker />}
+    >
       {page === 'today' && <Today />}
       {page === 'medicines' && <Medicines />}
       {page === 'insights' && <Insights />}

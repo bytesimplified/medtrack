@@ -287,3 +287,70 @@ a {
   color: var(--error, #b42318);
   font-size: 13px;
 }
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --canvas: #101c19;
+  --surface: #172924;
+  --surface-soft: #223b32;
+  --ink: #e7f3ec;
+  --muted: #afc7bc;
+  --accent: #97dcb5;
+  --accent-ink: #10291d;
+  --border: #365045;
+  --focus: #97dcb5;
+  --error: #ffb4ab;
+}
+.theme-settings {
+  max-width: 240px;
+}
+.theme-picker {
+  display: flex;
+  padding: 3px;
+  gap: 2px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.theme-button {
+  background: transparent;
+  color: var(--muted);
+  padding: 8px 10px;
+  min-width: 44px;
+  font-size: 12px;
+}
+.theme-button[aria-pressed='true'] {
+  background: var(--surface-soft);
+  color: var(--accent);
+}
+.theme-warning {
+  font-size: 11px;
+  line-height: 1.4;
+  margin-top: 8px;
+  color: var(--muted);
+}
+@media (max-width: 479px) {
+  .app-header {
+    padding: 20px 16px;
+    gap: 8px;
+  }
+  .brand {
+    gap: 8px;
+    font-size: 18px;
+  }
+  .brand-caption {
+    display: none;
+  }
+  .brand-icon {
+    padding: 10px;
+  }
+  .theme-label {
+    display: none;
+  }
+  .app-content {
+    padding-inline: 20px;
+  }
+  .card {
+    padding: 24px 20px;
+  }
+}
