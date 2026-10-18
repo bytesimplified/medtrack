@@ -97,7 +97,7 @@ describe('dose actions and correction history', () => {
     await today.click()
     await page.getByText('Pending today', { exact: true }).waitFor()
     await page.getByText('History and corrections (5)', { exact: true }).click()
-    await page.getByText('Dose action undone', { exact: true }).waitFor()
+    await page.getByText('Action undone', { exact: true }).waitFor()
     await page.getByText('Reminder moved later', { exact: true }).waitFor()
   })
 })
