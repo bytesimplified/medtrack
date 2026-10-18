@@ -49,8 +49,7 @@ deliver them later than the selected time, especially in battery-saving modes.
 MedTrack does not request exact-alarm access.
 
 The Android manifest disables automatic cloud backup and contains no internet
-permission. Medicine data stays on the device; manual JSON backups are added in
-roadmap PR 13.
+permission. Medicine data stays on the device; manual JSON export and restore are available in the app.
 
 ## Release signing
 
@@ -61,8 +60,8 @@ and select **APK**. Store the keystore and passwords in a secure password
 manager, make a separate offline backup, and record the alias and certificate
 fingerprint for future updates.
 
-Automated release signing and publishing are out of scope for PR 12. Before a
+Automated release signing and publishing are not configured. Before a
 Play Store release, add a protected release workflow that reads signing values
 from repository or environment secrets, limits access to trusted release
 events, and uploads the signed artifact for review. Complete the device and
-release checklist in PR 13 first.
+[release checklist](release-checklist.md) first.

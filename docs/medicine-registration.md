@@ -23,7 +23,7 @@ The schedule form supports daily, alternate-day, selected-weekday, and
 every-X-days recurrence; multiple daily dose slots; meal windows or custom
 clock times; optional reminder-time preferences; and start/end dates. “After
 lunch” stays a meal label. The saved reminder preference is disabled, and the
-form explains that notifications follow in PR 09.
+user enables reminders separately after saving and granting notification permission.
 
 ## Maintenance
 

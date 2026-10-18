@@ -23,8 +23,8 @@ records or placeholder data are shown.
 
 `npm run check` covers navigation, direct links, history events, keyboard focus,
 form labeling, disabled buttons, theme persistence, device changes, and blocked
-storage. CI also runs `.github/scripts/ui-smoke.mjs` against the production build
+storage. CI also runs `test/e2e/ui-smoke.mjs` against the production build
 in Chromium at desktop and 390px/320px mobile widths. It checks actual links,
 Back/reload, themes, overflow, tap targets, and runtime errors, and uploads UI
-screenshots. Playwright is pinned as temporary CI tooling; PR 11 will add the
-full registration/dose/refill end-to-end suite.
+screenshots. Playwright is pinned as CI tooling; isolated journeys also cover
+registration, doses, refills, reminders, history, and backup/offline behavior.
