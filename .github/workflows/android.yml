@@ -18,10 +18,6 @@ jobs:
     name: Build and launch debug APK
     runs-on: ubuntu-latest
     timeout-minutes: 35
-    env:
-      ANDROID_USER_HOME: ${{ runner.temp }}/medtrack-android
-      ANDROID_EMULATOR_HOME: ${{ runner.temp }}/medtrack-android
-      ANDROID_AVD_HOME: ${{ runner.temp }}/medtrack-android/avd
 
     steps:
       - name: Check out repository
@@ -81,6 +77,10 @@ jobs:
           "$ANDROID_HOME/emulator/emulator" -accel-check
 
       - name: Create Android emulator
+        env:
+          ANDROID_USER_HOME: ${{ runner.temp }}/medtrack-android
+          ANDROID_EMULATOR_HOME: ${{ runner.temp }}/medtrack-android
+          ANDROID_AVD_HOME: ${{ runner.temp }}/medtrack-android/avd
         run: |
           mkdir -p "$ANDROID_AVD_HOME"
           avdmanager create avd \
