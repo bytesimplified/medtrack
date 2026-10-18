@@ -399,6 +399,11 @@ a {
   .today-dose .today-status {
     margin-left: 54px;
   }
+  .today-dose-actions {
+    flex-basis: 100%;
+    justify-content: flex-start;
+    margin-left: 54px;
+  }
   .card {
     padding: 24px 20px;
   }
@@ -605,6 +610,25 @@ a {
 }
 .today-status {
   flex-shrink: 0;
+}
+.today-dose-actions {
+  display: flex;
+  flex: 0 1 230px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.today-dose-actions .button {
+  min-height: 40px;
+  padding: 8px 11px;
+}
+.today-dose-snooze {
+  margin: 6px 0 0;
+  color: var(--accent);
+  font-size: 12px;
+}
+.today-action-notice {
+  margin-bottom: 16px;
 }
 .today-status-taken {
   background: color-mix(in srgb, var(--accent) 18%, var(--surface));
