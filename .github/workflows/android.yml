@@ -69,6 +69,13 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+      - name: Enable emulator hardware acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          "$ANDROID_HOME/emulator/emulator" -accel-check
+
       - name: Create Android emulator
         run: |
           avdmanager create avd \
@@ -76,16 +83,20 @@ jobs:
             --name medtrack-ci \
             --package 'system-images;android-35;google_apis;x86_64' \
             <<< 'no'
-          emulator \
+          "$ANDROID_HOME/emulator/emulator" \
             -avd medtrack-ci \
             -no-window \
             -no-audio \
             -no-boot-anim \
             -no-snapshot \
             -gpu swiftshader_indirect \
-            -accel auto \
+            -accel on \
             >/tmp/medtrack-emulator.log 2>&1 &
-          adb wait-for-device
+          if ! timeout 120s adb wait-for-device; then
+            echo 'Android emulator did not connect within 120 seconds.' >&2
+            tail -n 120 /tmp/medtrack-emulator.log
+            exit 1
+          fi
           for attempt in {1..120}; do
             if [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" == '1' ]]; then
               exit 0
