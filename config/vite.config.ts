@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { fileURLToPath } from 'node:url'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, type Plugin } from 'vitest/config'
@@ -79,6 +80,7 @@ self.addEventListener('fetch', (event) => {
 
 // https://vite.dev/config/
 export default defineConfig({
+  root: fileURLToPath(new URL('..', import.meta.url)),
   plugins: [react(), tailwindcss(), offlineAppShell()],
   test: {
     environment: 'jsdom',

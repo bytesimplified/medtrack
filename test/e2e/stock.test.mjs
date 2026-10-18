@@ -11,6 +11,7 @@ describe('stock management in the browser', () => {
 
   before(async () => {
     server = await preview({
+      configFile: 'config/vite.config.ts',
       preview: { host: '127.0.0.1', port: 5180, strictPort: true },
     })
     browser = await chromium.launch({ headless: true })

@@ -14,11 +14,11 @@ export default defineConfig([
     languageOptions: { globals: globals.browser },
   },
   {
-    files: ['src/**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}', 'test/**/*.{ts,tsx}'],
     extends: [reactHooks.configs.flat.recommended, reactRefresh.configs.vite],
   },
   {
-    files: ['*.config.{js,ts}'],
+    files: ['**/*.config.{js,ts}'],
     languageOptions: { globals: globals.node },
   },
   {

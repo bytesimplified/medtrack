@@ -5,6 +5,7 @@ import { preview } from 'vite'
 ;(async () => {
   await mkdir('test-results', { recursive: true })
   const server = await preview({
+    configFile: 'config/vite.config.ts',
     preview: { host: '127.0.0.1', port: 5179, strictPort: true },
   })
   let browser
