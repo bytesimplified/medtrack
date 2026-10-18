@@ -67,7 +67,7 @@ self.addEventListener('fetch', (event) => {
 
   if (PRECACHE_URLS.includes(url.pathname)) {
     event.respondWith(
-      caches.match(request).then((cached) => cached || fetch(request)),
+      caches.match(url.pathname).then((cached) => cached || fetch(request)),
     );
   }
 });
