@@ -107,6 +107,7 @@ describe('stock management in the browser', () => {
       .getByText('Stock adjustment recorded.', { exact: true })
       .waitFor()
     await page.getByText('28 tablets recorded stock', { exact: true }).waitFor()
+    await page.getByText('Stock history (2)', { exact: true }).click()
     await page.getByText('Adjustment · −2 tablets', { exact: true }).waitFor()
     await page.getByText('Reason: Damaged tablets', { exact: true }).waitFor()
   })
