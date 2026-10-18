@@ -113,6 +113,9 @@ import { preview } from 'vite'
       if (width === 390) {
         await page.getByRole('link', { name: 'Medicines', exact: true }).click()
         await page
+          .getByRole('heading', { name: 'Medicines', exact: true })
+          .waitFor()
+        await page
           .getByRole('heading', { name: 'CI smoke medicine', exact: true })
           .waitFor()
         assert.equal(
