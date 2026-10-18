@@ -646,6 +646,24 @@ a {
   flex-wrap: wrap;
   padding-top: 4px;
 }
+.reminder-settings {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 0 0 24px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+}
+.reminder-settings .section-subtitle {
+  margin: 0 0 4px;
+}
+.reminder-settings .field-hint {
+  margin: 0;
+}
 .button-secondary {
   border-color: var(--border);
   background: var(--surface);

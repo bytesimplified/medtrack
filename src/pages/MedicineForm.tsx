@@ -97,6 +97,9 @@ export function MedicineForm({
   const [lowStockDays, setLowStockDays] = useState(
     String(editing?.lowStockDays ?? 5),
   )
+  const [lowStockAlertsEnabled, setLowStockAlertsEnabled] = useState(
+    editing?.lowStockAlertsEnabled ?? false,
+  )
   const [frequency, setFrequency] = useState<Frequency>('')
   const [intervalDays, setIntervalDays] = useState('2')
   const [weekdays, setWeekdays] = useState<Weekday[]>([])
@@ -136,6 +139,7 @@ export function MedicineForm({
           notes,
           unit: unit as MedicineUnit,
           lowStockDays: Number(lowStockDays),
+          lowStockAlertsEnabled,
         })
       } else {
         let recurrence: Recurrence
@@ -189,6 +193,7 @@ export function MedicineForm({
           unit: unit as MedicineUnit,
           initialStock,
           lowStockDays: Number(lowStockDays),
+          lowStockAlertsEnabled,
           recurrence,
           startDate,
           endDate: endDate || null,
@@ -290,6 +295,18 @@ export function MedicineForm({
             value={lowStockDays}
             onChange={(event) => setLowStockDays(event.target.value)}
           />
+          <label className="choice form-span" htmlFor="low-stock-notifications">
+            <input
+              id="low-stock-notifications"
+              type="checkbox"
+              checked={lowStockAlertsEnabled}
+              onChange={(event) =>
+                setLowStockAlertsEnabled(event.target.checked)
+              }
+            />
+            Send a notification when this medicine reaches the low-stock
+            threshold
+          </label>
           <div className="field form-span">
             <label className="field-label" htmlFor="medicine-description">
               Description (optional)
@@ -482,7 +499,7 @@ export function MedicineForm({
                           <Input
                             label="Reminder time (optional)"
                             type="time"
-                            hint="Saved as a preference. Notifications are planned for PR 09."
+                            hint="Set a clock time here to enable a reminder after saving."
                             value={dose.reminderTime}
                             onChange={(event) =>
                               updateDose(dose.id, {

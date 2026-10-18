@@ -1,4 +1,8 @@
+import { liveQuery } from 'dexie'
 import { useEffect, useRef } from 'react'
+import { db } from './database/db'
+import { browserNotificationAdapter } from './reminders/platform'
+import { synchronizeReminders } from './reminders/service'
 import { ThemePicker } from './theme/ThemePicker'
 import { AppShell } from './components/AppShell'
 import { Navigation } from './components/Navigation'
@@ -17,6 +21,31 @@ export default function App() {
       previousPage.current = page
     }
   }, [page])
+
+  useEffect(() => {
+    const changes = liveQuery(() =>
+      Promise.all([
+        db.medicines.toArray(),
+        db.doseSchedules.toArray(),
+        db.doseOccurrences.toArray(),
+        db.reminderPreferences.toArray(),
+        db.stockTransactions.toArray(),
+      ]),
+    )
+    const subscription = changes.subscribe({
+      next() {
+        void synchronizeReminders().catch(() => undefined)
+      },
+      error() {
+        // Reminder synchronization is best-effort if local storage is unavailable.
+      },
+    })
+    return () => {
+      subscription.unsubscribe()
+      void browserNotificationAdapter.cancelAll()
+    }
+  }, [])
+
   return (
     <AppShell
       navigation={<Navigation page={page} />}
