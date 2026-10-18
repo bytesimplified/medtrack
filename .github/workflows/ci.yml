@@ -46,3 +46,30 @@ jobs:
 
       - name: Typecheck and build
         run: npm run build
+
+  browser-smoke:
+    name: Browser smoke (desktop and mobile)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # Isolated CI tooling; no change to application dependencies or lockfile.
+      - run: npm install --no-save --package-lock=false playwright@1.62.1
+      - run: npx playwright install --with-deps chromium
+      - run: node .github/scripts/ui-smoke.mjs
+      - name: Upload UI screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: app-shell-screenshots
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
