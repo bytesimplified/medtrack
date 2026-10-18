@@ -64,7 +64,9 @@ jobs:
       - run: npm install --no-save --package-lock=false playwright@1.62.1
       - run: npx playwright install --with-deps chromium
       - run: node .github/scripts/ui-smoke.mjs
-      - name: Upload UI screenshots
+      - name: Run isolated browser journeys
+        run: node --test .github/scripts/e2e/*.test.mjs
+      - name: Upload browser test artifacts
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
