@@ -1,7 +1,7 @@
 import { liveQuery } from 'dexie'
 import { useEffect, useRef } from 'react'
 import { db } from './database/db'
-import { browserNotificationAdapter } from './reminders/platform'
+import { notificationAdapter } from './reminders/native'
 import { synchronizeReminders } from './reminders/service'
 import { ThemePicker } from './theme/ThemePicker'
 import { AppShell } from './components/AppShell'
@@ -23,6 +23,8 @@ export default function App() {
   }, [page])
 
   useEffect(() => {
+    const initialized = notificationAdapter.initialize?.() ?? Promise.resolve()
+    void initialized.then(() => synchronizeReminders()).catch(() => undefined)
     const changes = liveQuery(() =>
       Promise.all([
         db.medicines.toArray(),
@@ -34,7 +36,9 @@ export default function App() {
     )
     const subscription = changes.subscribe({
       next() {
-        void synchronizeReminders().catch(() => undefined)
+        void initialized
+          .then(() => synchronizeReminders())
+          .catch(() => undefined)
       },
       error() {
         // Reminder synchronization is best-effort if local storage is unavailable.
@@ -42,7 +46,7 @@ export default function App() {
     })
     return () => {
       subscription.unsubscribe()
-      void browserNotificationAdapter.cancelAll()
+      void notificationAdapter.cancelAll()
     }
   }, [])
 
