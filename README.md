@@ -6,15 +6,15 @@ This README is the project's standing overview and progress tracker. Keep the ov
 
 ## Project status
 
-| Item                         | Status                                                    |
-| ---------------------------- | --------------------------------------------------------- |
-| Target                       | MedTrack v1.0 MVP                                         |
-| Planned implementation PRs   | 13                                                        |
-| Completed and merged         | 9 / 13 in main                                            |
-| Current milestone            | Browser MVP delivered on main; history and analytics next |
-| Next planned work            | Plan 10 — History and Analytics                           |
-| Functional medicine tracking | Available on main                                         |
-| Android APK                  | Planned                                                   |
+| Item                         | Status                                       |
+| ---------------------------- | -------------------------------------------- |
+| Target                       | MedTrack v1.0 MVP                            |
+| Planned implementation PRs   | 13                                           |
+| Completed and merged         | 9 / 13 in main                               |
+| Current milestone            | Plans 10–12 in progress; browser MVP on main |
+| Next planned work            | Plan 13 — Backup, Polish and Release         |
+| Functional medicine tracking | Available on main                            |
+| Android APK                  | Debug APK CI in progress (PR #16)            |
 
 **Status key:** Planned → In progress → Ready for review → Done (merged to `main`). **Partial** means some functionality remains on a later roadmap item.
 
@@ -39,7 +39,7 @@ This README is the project's standing overview and progress tracker. Keep the ov
 | FR05      | Taken, Skipped, and Later actions; Later only snoozes reminders                       | 07, 09        | Done (merged)                                     |
 | FR06      | Deduct stock only on confirmed Taken, using atomic and idempotent updates             | 07            | Done (merged)                                     |
 | FR07      | Stock refills, explicit adjustments, reconciliation, and refill history               | 08            | Done (merged)                                     |
-| FR08      | Scheduled dose reminders, permission handling, snooze, and rescheduling               | 09, 12        | Browser reminders done; Android planned           |
+| FR08      | Scheduled dose reminders, permission handling, snooze, and rescheduling               | 09, 12        | Browser done; Android in progress (PR #16)        |
 | FR09      | Low-stock alerts with duplicate-warning prevention                                    | 08, 09        | Done (merged)                                     |
 | FR10      | Daily dose history with exact timestamps and correction audit trail                   | 07, 10        | In progress (PR #14)                              |
 | FR11      | Calendar, weekly/monthly adherence, and medicine-specific history                     | 10            | In progress (PR #14)                              |
@@ -53,8 +53,8 @@ This README is the project's standing overview and progress tracker. Keep the ov
 | QA01      | PC development, formatting, linting, startup test, and build CI                       | 01            | Done                                              |
 | QA02      | Domain tests for schedules, stock, corrections, and analytics                         | 04–10         | Unit tests done; analytics coverage in progress   |
 | QA03      | Automated browser end-to-end tests on pull requests                                   | 08, 09, 11    | Stock/reminder done; broader journeys in progress |
-| ANDROID01 | Capacitor integration, emulator checks, and automated debug APK builds                | 12            | Planned                                           |
-| RELEASE01 | Physical-device validation, signing documentation, and release readiness              | 12, 13        | Planned                                           |
+| ANDROID01 | Capacitor integration, emulator checks, and automated debug APK builds                | 12            | In progress (PR #16)                              |
+| RELEASE01 | Physical-device validation, signing documentation, and release readiness              | 12, 13        | Signing guide PR #16; device checks PR 13         |
 
 ## Planned PRs
 
@@ -73,18 +73,18 @@ The numbers below are roadmap identifiers. Actual GitHub PR links are added when
 | 09   | [Reminders and Notifications](https://github.com/bytesimplified/medtrack/pull/9) · `feat/notifications`        | Browser adapter, permission handling, dose snooze, and low-stock alert rules             | Done (merged) |
 | 10   | [History and Analytics](https://github.com/bytesimplified/medtrack/pull/14) · `feat/analytics`                 | Calendar, medicine history, taken/skipped/unconfirmed counts, and adherence              | In progress   |
 | 11   | [Automated End-to-End Tests](https://github.com/bytesimplified/medtrack/pull/15) · `test/e2e-coverage`         | Expand Playwright journeys beyond stock and reminder flows                               | In progress   |
-| 12   | Android Integration and APK CI · `feat/android-build`                                                          | Capacitor, app identity/permissions, emulator checks, debug APK workflow, signing guide  | Planned       |
+| 12   | [Android Integration and APK CI](https://github.com/bytesimplified/medtrack/pull/16) · `feat/android-build`    | Capacitor, app identity/permissions, emulator checks, debug APK workflow, signing guide  | In progress   |
 | 13   | Backup, Polish and Release · `release/v1-polish`                                                               | Export/restore, offline/error handling, accessibility, migrations, and release checklist | Planned       |
 
 **Milestone 1:** Functional browser MVP delivered to `main` through PR 11, with stock and reminder journeys in CI.  
 **Milestone 2:** v1.0 release candidate after PR 13, subject to final device validation and signing.  
-PR 09 implements browser notification scheduling; Android background notifications and device validation follow in PR 12.
+PR 09 implements browser notification scheduling. PR 12 adds Android support; physical-device and release validation remain in PR 13.
 
 ## Integration validation
 
 - The feature stack containing PRs 05–09 was integrated into `main` through [PR 11](https://github.com/bytesimplified/medtrack/pull/11), preserving the feature commits.
 - [GitHub Actions run 39101334513](https://github.com/bytesimplified/medtrack/actions/runs/39101334513) passed formatting, lint, unit tests, TypeScript, production build, desktop/mobile browser smoke, and stock/reminder end-to-end journeys.
-- Browser medicine tracking, stock forecasts, and browser reminders are available on `main`. Android background reminders and APK builds remain planned under roadmap item 12.
+- Browser medicine tracking, stock forecasts, and browser reminders are available on `main`. Android background reminders and APK builds are in progress under roadmap item 12.
 
 ## Completed work
 
@@ -111,7 +111,7 @@ PR 09 implements browser notification scheduling; Android background notificatio
 
 **Verified:** clean `npm ci`, formatting, zero-warning lint, 1 startup test, TypeScript, production build, development-server startup, and `git diff --check`.
 
-The initially empty repository received a README-only bootstrap commit to establish `main`. PR 01 established the project foundation; PRs 02–09 subsequently delivered the browser MVP. Offline refinements, Android integration and APK builds, backups, and release validation remain on the roadmap.
+The initially empty repository received a README-only bootstrap commit to establish `main`. PR 01 established the project foundation; PRs 02–09 subsequently delivered the browser MVP. PRs 10–12 are in progress; backup, offline polish, physical-device checks, and release readiness follow in PR 13.
 
 ### PRs 05–09 — Browser medicine-tracking MVP
 
@@ -124,14 +124,14 @@ The initially empty repository received a README-only bootstrap commit to establ
 
 ## Architecture and data rules
 
-| Area           | Approach                                                        |
-| -------------- | --------------------------------------------------------------- |
-| Web app        | React + TypeScript + Vite                                       |
-| Styling        | Tailwind CSS + Lucide icons                                     |
-| Local database | IndexedDB with Dexie                                            |
-| Android        | Planned: Capacitor + local notifications                        |
-| Testing        | Vitest and browser E2E journeys; emulator/device checks planned |
-| Delivery       | GitHub Actions quality and browser checks; APK builds planned   |
+| Area           | Approach                                             |
+| -------------- | ---------------------------------------------------- |
+| Web app        | React + TypeScript + Vite                            |
+| Styling        | Tailwind CSS + Lucide icons                          |
+| Local database | IndexedDB with Dexie                                 |
+| Android        | Capacitor 8 + local notifications (PR 12)            |
+| Testing        | Vitest/browser E2E; Android emulator checks in PR 12 |
+| Delivery       | GitHub Actions web CI and debug APK artifact (PR 12) |
 
 - Keep scheduling, dose logging, stock calculation, analytics, and platform notifications separate from UI.
 - Model Medicine, versioned DoseSchedule, DoseOccurrence, append-only DoseEvent, StockTransaction, and reminder preferences.

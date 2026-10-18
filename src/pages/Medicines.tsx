@@ -30,10 +30,8 @@ import {
 } from '../medicines/registration'
 import { adjustStock, listStockHistory, refillStock } from '../stock/ledger'
 import { calculateStockForecast, type StockForecast } from '../stock/forecast'
-import {
-  browserNotificationAdapter,
-  type ReminderPermission,
-} from '../reminders/platform'
+import type { ReminderPermission } from '../reminders/platform'
+import { isNativeApp, notificationAdapter } from '../reminders/native'
 import {
   requestNotificationPermission,
   setScheduleReminderEnabled,
@@ -116,9 +114,9 @@ function permissionLabel(permission: ReminderPermission) {
     case 'granted':
       return 'allowed'
     case 'denied':
-      return 'blocked in browser settings'
+      return 'blocked in system settings'
     case 'unsupported':
-      return 'not supported in this browser'
+      return 'not supported on this device'
     case 'prompt':
       return 'not requested'
   }
@@ -142,9 +140,20 @@ export function Medicines() {
   }>()
   const [busy, setBusy] = useState<string | null>(null)
   const [notificationPermission, setNotificationPermission] =
-    useState<ReminderPermission>(() =>
-      browserNotificationAdapter.permissionStatus(),
-    )
+    useState<ReminderPermission>(() => notificationAdapter.permissionStatus())
+
+  useEffect(() => {
+    let active = true
+    void (async () => {
+      await notificationAdapter.initialize?.()
+      if (active) {
+        setNotificationPermission(notificationAdapter.permissionStatus())
+      }
+    })().catch(() => undefined)
+    return () => {
+      active = false
+    }
+  }, [])
 
   useEffect(() => {
     const query = liveQuery(async () => {
@@ -281,13 +290,19 @@ export function Medicines() {
         <div>
           <h2 className="section-subtitle">Dose reminders</h2>
           <p className="field-hint">
-            Browser permission: {permissionLabel(notificationPermission)}.
-            Reminders run while MedTrack is open in this browser.
+            {isNativeApp
+              ? 'Android notification permission: '
+              : 'Browser permission: '}
+            {permissionLabel(notificationPermission)}.
+            {isNativeApp
+              ? ' Android can deliver reminders while MedTrack is closed, though delivery time may vary.'
+              : ' Reminders run while MedTrack is open in this browser.'}
           </p>
           {notificationPermission === 'denied' && (
             <p className="field-hint">
-              Allow notifications for this site in your browser settings, then
-              reload MedTrack.
+              {isNativeApp
+                ? 'Allow notifications for MedTrack in Android app settings.'
+                : 'Allow notifications for this site in your browser settings, then reload MedTrack.'}
             </p>
           )}
         </div>
@@ -301,13 +316,19 @@ export function Medicines() {
                 setNotificationPermission(permission)
                 setNotice(
                   permission === 'granted'
-                    ? 'Browser notifications are enabled.'
-                    : 'Browser notification permission was not granted.',
+                    ? isNativeApp
+                      ? 'Android notifications are enabled.'
+                      : 'Browser notifications are enabled.'
+                    : isNativeApp
+                      ? 'Android notification permission was not granted.'
+                      : 'Browser notification permission was not granted.',
                 )
               })
             }
           >
-            Enable browser notifications
+            {isNativeApp
+              ? 'Enable Android notifications'
+              : 'Enable browser notifications'}
           </Button>
         )}
       </section>
@@ -513,7 +534,7 @@ export function Medicines() {
                                           !reminder.enabled,
                                         )
                                       setNotificationPermission(
-                                        browserNotificationAdapter.permissionStatus(),
+                                        notificationAdapter.permissionStatus(),
                                       )
                                       setNotice(
                                         enabled
@@ -522,7 +543,7 @@ export function Medicines() {
                                       )
                                     } finally {
                                       setNotificationPermission(
-                                        browserNotificationAdapter.permissionStatus(),
+                                        notificationAdapter.permissionStatus(),
                                       )
                                     }
                                   })

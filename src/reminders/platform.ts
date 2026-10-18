@@ -11,6 +11,7 @@ export interface LocalNotification {
 
 export interface NotificationAdapter {
   permissionStatus(): ReminderPermission
+  initialize?(): Promise<void>
   requestPermission(): Promise<ReminderPermission>
   schedule(notification: LocalNotification): Promise<void>
   notifyNow(notification: LocalNotification): Promise<boolean>

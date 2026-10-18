@@ -11,12 +11,12 @@ import { localDateInTimeZone } from '../medicines/registration'
 import { generateOccurrences } from '../scheduling/engine'
 import { calculateStockForecast } from '../stock/forecast'
 import {
-  browserNotificationAdapter,
   localDateTimeToInstant,
   type LocalNotification,
   type NotificationAdapter,
   type ReminderPermission,
 } from './platform'
+import { notificationAdapter } from './native'
 
 const DOSE_REMINDER_DAYS = 30
 let synchronizationTail: Promise<void> = Promise.resolve()
@@ -86,7 +86,7 @@ async function savePermissionStatus(
 
 export async function requestNotificationPermission(
   database: MedTrackDatabase = db,
-  adapter: NotificationAdapter = browserNotificationAdapter,
+  adapter: NotificationAdapter = notificationAdapter,
   now = new Date(),
 ): Promise<ReminderPermission> {
   const timestamp = validNow(now)
@@ -107,7 +107,7 @@ export async function setScheduleReminderEnabled(
   scheduleId: string,
   enabled: boolean,
   database: MedTrackDatabase = db,
-  adapter: NotificationAdapter = browserNotificationAdapter,
+  adapter: NotificationAdapter = notificationAdapter,
   now = new Date(),
 ): Promise<boolean> {
   const timestamp = validNow(now)
@@ -175,7 +175,7 @@ async function claimLowStockAlert(
 
 export function synchronizeReminders(
   database: MedTrackDatabase = db,
-  adapter: NotificationAdapter = browserNotificationAdapter,
+  adapter: NotificationAdapter = notificationAdapter,
   now = new Date(),
 ): Promise<ReminderSyncResult> {
   const run = () => synchronizeRemindersNow(database, adapter, now)
