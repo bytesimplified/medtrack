@@ -22,9 +22,46 @@ import { preview } from 'vite'
     await page
       .getByRole('heading', { name: 'Medicines', exact: true })
       .waitFor()
+    await page.getByRole('button', { name: 'Add medicine' }).click()
+    await page.getByLabel('Medicine name').fill('CI smoke medicine')
+    await page.getByLabel('Unit', { exact: true }).selectOption('tablet')
+    await page.getByLabel('Frequency').selectOption('daily')
+    await page.getByLabel('Starting stock (tablets)').fill('30')
+    await page.getByLabel('Dose quantity (tablets)').fill('1')
+    await page.getByLabel('Meal window').selectOption('after-lunch')
+    await page.getByRole('button', { name: 'Add dose time' }).click()
+    await page.getByLabel('Dose quantity (tablets)').nth(1).fill('0.5')
+    await page.getByLabel('Timing for dose 2').selectOption('custom')
+    await page.getByLabel('Custom time').fill('20:00')
+    await page.getByRole('button', { name: 'Save medicine' }).click()
+    await page
+      .getByRole('heading', { name: 'CI smoke medicine', exact: true })
+      .waitFor()
+    await page.getByText('30 tablets recorded stock', { exact: true }).waitFor()
+    await page
+      .getByRole('button', { name: 'Edit schedule for CI smoke medicine' })
+      .first()
+      .click()
+    const effectiveFrom = await page.getByLabel('Effective from').inputValue()
+    assert.ok(effectiveFrom)
+    await page.getByLabel('Dose quantity (tablets)').fill('2')
+    await page.getByLabel('Frequency').selectOption('weekdays')
+    await page.getByLabel('Monday').check()
+    await page.getByRole('button', { name: 'Save schedule' }).click()
+    await page
+      .getByText('Schedule updated from ' + effectiveFrom + '.')
+      .waitFor()
+    await page.getByText(/version 2/).waitFor()
+    await page.screenshot({
+      path: 'test-results/medicines-desktop.png',
+      fullPage: true,
+    })
     await page.reload()
     await page
       .getByRole('heading', { name: 'Medicines', exact: true })
+      .waitFor()
+    await page
+      .getByRole('heading', { name: 'CI smoke medicine', exact: true })
       .waitFor()
     await page.getByRole('link', { name: 'Insights', exact: true }).click()
     await page.getByRole('heading', { name: 'Insights', exact: true }).waitFor()
@@ -34,6 +71,40 @@ import { preview } from 'vite'
       .waitFor()
     await page.getByRole('link', { name: 'Today', exact: true }).click()
     await page.getByRole('heading', { name: 'Today', exact: true }).waitFor()
+    await page.getByText('0 of 2 complete', { exact: true }).waitFor()
+    await page
+      .getByText('30 tablets recorded stock', { exact: true })
+      .first()
+      .waitFor()
+    await page.getByRole('heading', { name: 'After lunch' }).waitFor()
+    await page.getByRole('heading', { name: '20:00', exact: true }).waitFor()
+    await page
+      .getByRole('heading', { name: 'CI smoke medicine' })
+      .first()
+      .waitFor()
+    const firstDose = page.locator('.today-dose').first()
+    const secondDose = page.locator('.today-dose').nth(1)
+    await firstDose.getByRole('button', { name: /^Take/ }).click()
+    await page.getByText('1 of 2 complete', { exact: true }).waitFor()
+    await page
+      .getByText('29 tablets recorded stock', { exact: true })
+      .first()
+      .waitFor()
+    await firstDose.getByRole('button', { name: /^Undo/ }).click()
+    await page.getByText('0 of 2 complete', { exact: true }).waitFor()
+    await page
+      .getByText('30 tablets recorded stock', { exact: true })
+      .first()
+      .waitFor()
+    await secondDose.getByRole('button', { name: /^Move/ }).click()
+    await page.getByText('Dose moved later.', { exact: true }).waitFor()
+    await page.getByText(/^Reminder moved to /).waitFor()
+    await secondDose.getByRole('button', { name: /^Skip/ }).click()
+    await page.getByText('1 of 2 complete', { exact: true }).waitFor()
+    await page
+      .getByText('30 tablets recorded stock', { exact: true })
+      .first()
+      .waitFor()
     await page.screenshot({ path: 'test-results/desktop.png', fullPage: true })
     await page.getByRole('button', { name: 'Dark theme', exact: true }).click()
     await page.reload()
@@ -62,6 +133,26 @@ import { preview } from 'vite'
           path: 'test-results/mobile-dark.png',
           fullPage: true,
         })
+      if (width === 390) {
+        await page.getByRole('link', { name: 'Medicines', exact: true }).click()
+        await page
+          .getByRole('heading', { name: 'Medicines', exact: true })
+          .waitFor()
+        await page
+          .getByRole('heading', { name: 'CI smoke medicine', exact: true })
+          .waitFor()
+        assert.equal(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth,
+          ),
+          true,
+        )
+        await page.screenshot({
+          path: 'test-results/medicines-mobile-dark.png',
+          fullPage: true,
+        })
+        await page.getByRole('link', { name: 'Today', exact: true }).click()
+      }
     }
     await page
       .getByRole('button', { name: 'Device theme', exact: true })
@@ -76,7 +167,7 @@ import { preview } from 'vite'
     )
     assert.deepEqual(errors, [])
     console.log(
-      'PASS: browser navigation, reload, Back, saved and device themes, 1280/390/320 layouts, tap targets, no runtime errors.',
+      'PASS: browser navigation, medicine and schedule persistence, reload, Back, saved and device themes, 1280/390/320 layouts, tap targets, no runtime errors.',
     )
   } finally {
     await browser?.close()

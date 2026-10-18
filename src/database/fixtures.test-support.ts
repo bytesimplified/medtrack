@@ -71,6 +71,8 @@ export function event(): DoseEvent {
     newQuantityTaken: parseQuantity('1'),
     previousTakenAt: null,
     newTakenAt: now,
+    previousSnoozedUntil: null,
+    newSnoozedUntil: null,
     reversesEventId: null,
     recordedAt: now,
     note: null,

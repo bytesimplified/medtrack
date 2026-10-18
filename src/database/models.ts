@@ -24,6 +24,10 @@ export interface Medicine {
   notes: string | null
   unit: MedicineUnit
   lowStockDays: number
+  /** Notifications are opt-in; omitted on older version-1 records means false. */
+  lowStockAlertsEnabled?: boolean
+  /** Prevents repeated low-stock notifications on the same medicine-local day. */
+  lastLowStockAlertDate?: LocalDate | null
   isArchived: boolean
   archivedAt: Timestamp | null
   createdAt: Timestamp
@@ -101,13 +105,16 @@ export interface DoseEvent {
   readonly id: Id
   readonly operationId: Id // Unique retry token for a logical command.
   readonly occurrenceId: Id
-  readonly action: 'taken' | 'skipped' | 'undone' | 'corrected'
+  readonly action: 'taken' | 'skipped' | 'snoozed' | 'undone' | 'corrected'
   readonly previousStatus: DoseStatus
   readonly newStatus: DoseStatus
   readonly previousQuantityTaken: Quantity | null
   readonly newQuantityTaken: Quantity | null
   readonly previousTakenAt: Timestamp | null
   readonly newTakenAt: Timestamp | null
+  /** Optional for compatibility with audit rows written before snooze history. */
+  readonly previousSnoozedUntil?: Timestamp | null
+  readonly newSnoozedUntil?: Timestamp | null
   readonly reversesEventId: Id | null
   readonly recordedAt: Timestamp
   readonly note: string | null
