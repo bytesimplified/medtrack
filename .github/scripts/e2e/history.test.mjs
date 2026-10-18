@@ -111,7 +111,7 @@ describe('medicine, dose, and history journey', () => {
     await page.getByText('Archived', { exact: true }).waitFor()
 
     await page.getByRole('link', { name: 'Insights', exact: true }).click()
-    await page.getByLabel('Medicine').selectOption({
+    await page.getByRole('combobox', { name: 'Medicine' }).selectOption({
       label: `${medicineName} (archived)`,
     })
     await page
@@ -122,7 +122,7 @@ describe('medicine, dose, and history journey', () => {
       .waitFor()
     await page.reload()
     await page.getByRole('heading', { name: 'Insights', exact: true }).waitFor()
-    await page.getByLabel('Medicine').selectOption({
+    await page.getByRole('combobox', { name: 'Medicine' }).selectOption({
       label: `${medicineName} (archived)`,
     })
     await page
