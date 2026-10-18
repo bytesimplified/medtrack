@@ -350,6 +350,40 @@ a {
   .app-content {
     padding-inline: 20px;
   }
+  .page-heading-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .page-heading-row > button {
+    align-self: flex-start;
+    margin: 0 0 18px;
+  }
+  .medicine-card-top,
+  .form-card-heading {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .stock-value {
+    text-align: left;
+  }
+  .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .form-section-heading {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .form-section-heading .button {
+    align-self: flex-start;
+  }
+  .schedule-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .schedule-row .button {
+    align-self: flex-start;
+  }
   .card {
     padding: 24px 20px;
   }
@@ -365,4 +399,225 @@ a {
   .theme-label {
     display: inline;
   }
+}
+
+.page-heading-row,
+.medicine-card-top,
+.form-card-heading,
+.form-section-heading,
+.schedule-row,
+.medicine-title-row,
+.medicine-actions,
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.page-heading-row {
+  align-items: flex-start;
+}
+.page-heading-row .page-description {
+  margin-bottom: 20px;
+}
+.medicine-list,
+.dose-slot-list {
+  display: grid;
+  gap: 16px;
+}
+.medicine-card {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+}
+.medicine-card-top {
+  align-items: flex-start;
+}
+.medicine-name,
+.section-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 650;
+  letter-spacing: -0.5px;
+}
+.section-title {
+  font-size: 22px;
+}
+.medicine-subtitle,
+.medicine-copy {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.medicine-copy {
+  margin: 0;
+  font-size: 14px;
+}
+.stock-value {
+  margin: 0;
+  text-align: right;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.stock-value span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+.status-badge {
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+.schedule-list {
+  display: grid;
+  gap: 12px;
+}
+.schedule-row {
+  align-items: flex-start;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.schedule-title {
+  margin: 0 0 5px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.schedule-row .field-hint {
+  margin: 0;
+  line-height: 1.5;
+}
+.medicine-actions {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+.button-secondary {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--ink);
+}
+.button-secondary:not(:disabled):hover {
+  background: var(--surface-soft);
+}
+.button-small {
+  min-height: 40px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+.medicine-form-card {
+  margin-bottom: 24px;
+}
+.form-card-heading {
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+.form-card-heading .page-note {
+  margin: 8px 0 0;
+}
+.medicine-form {
+  display: grid;
+  gap: 22px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.form-span {
+  grid-column: 1 / -1;
+}
+.form-section {
+  display: grid;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.section-subtitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+}
+.form-section-heading {
+  align-items: flex-start;
+}
+.form-section-heading .field-hint {
+  max-width: 540px;
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+.input[type='number'],
+.input[type='date'],
+.input[type='time'],
+select.input,
+textarea.input {
+  box-sizing: border-box;
+}
+textarea.input {
+  resize: vertical;
+  min-height: 72px;
+}
+.weekday-picker,
+.dose-slot {
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.weekday-picker legend,
+.dose-slot legend {
+  padding: 0 6px;
+}
+.choice-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+}
+.choice input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+.dose-slot-list {
+  gap: 14px;
+}
+.dose-slot .form-grid {
+  align-items: end;
+}
+.dose-remove {
+  display: flex;
+  justify-content: flex-end;
+}
+.form-actions {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.form-error {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: var(--error, #b42318);
+  background: var(--surface-soft);
+  line-height: 1.5;
+}
+.success-message {
+  margin: 0 0 18px;
+  color: var(--accent);
+  font-weight: 600;
 }
