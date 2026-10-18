@@ -112,3 +112,17 @@ export interface DoseEvent {
   readonly recordedAt: Timestamp
   readonly note: string | null
 }
+
+/** Signed milliunits; stock balance is the sum of this append-only ledger. */
+export interface StockTransaction {
+  readonly id: Id
+  readonly operationId: Id
+  readonly medicineId: Id
+  readonly doseEventId: Id | null
+  readonly transactionType:
+    'initial' | 'consumption' | 'refill' | 'adjustment' | 'reversal'
+  readonly quantityDelta: Quantity
+  readonly reversesTransactionId: Id | null
+  readonly note: string | null
+  readonly createdAt: Timestamp
+}
