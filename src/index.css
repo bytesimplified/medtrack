@@ -421,6 +421,327 @@ a {
   }
 }
 
+.analytics-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 0 0 20px;
+}
+.analytics-filter {
+  width: min(100%, 300px);
+}
+.analytics-month-controls {
+  display: grid;
+  grid-template-columns: 44px minmax(150px, 1fr) 44px;
+  align-items: center;
+  gap: 8px;
+}
+.analytics-month-controls .button {
+  width: 44px;
+  padding: 8px;
+}
+.analytics-month-title {
+  margin: 0;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 650;
+}
+.analytics-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.analytics-metric {
+  padding: 18px 20px;
+}
+.analytics-metric-label,
+.analytics-metric-value {
+  margin: 0;
+}
+.analytics-metric-label {
+  color: var(--muted);
+  font-size: 13px;
+}
+.analytics-metric-value {
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 700;
+}
+.analytics-adherence-note {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 12px 0 24px;
+}
+.analytics-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  align-items: start;
+  gap: 20px;
+}
+.calendar-card {
+  min-width: 0;
+  padding: 20px;
+}
+.calendar-heading,
+.history-detail-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.calendar-heading {
+  margin-bottom: 18px;
+  color: var(--accent);
+}
+.calendar-heading .section-title {
+  color: var(--ink);
+}
+.calendar-weekdays,
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+}
+.calendar-weekdays {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+.calendar-weekdays span {
+  padding: 6px 0;
+}
+.calendar-day,
+.calendar-spacer {
+  min-width: 0;
+  min-height: 70px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.calendar-day {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+.calendar-day:not(:disabled):hover {
+  background: var(--surface-soft);
+}
+.calendar-day:disabled {
+  color: var(--muted);
+  opacity: 0.52;
+  cursor: default;
+}
+.calendar-day-selected {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  background: var(--surface-soft);
+}
+.calendar-day-number {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.calendar-today {
+  color: var(--accent);
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.calendar-day-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.calendar-legend {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.history-detail {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.history-detail-heading {
+  justify-content: space-between;
+  color: var(--accent);
+}
+.history-detail-heading .page-kicker {
+  margin: 0 0 4px;
+}
+.history-detail-heading .section-title {
+  color: var(--ink);
+  font-size: clamp(17px, 2vw, 22px);
+}
+.history-day-summary {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.history-dose-list {
+  display: grid;
+  gap: 10px;
+}
+.history-dose {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 16px;
+}
+.history-dose-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+.history-dose-icon {
+  display: grid;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--surface-soft);
+  color: var(--accent);
+}
+.history-dose-copy {
+  flex: 1;
+  min-width: 0;
+}
+.history-dose-name,
+.history-dose-detail,
+.history-archived,
+.history-taken-time {
+  margin: 0;
+}
+.history-dose-name {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.history-dose-detail,
+.history-archived,
+.history-taken-time {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.history-status {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.history-status-taken {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface));
+}
+.history-status-skipped,
+.history-status-unconfirmed,
+.history-status-pending {
+  color: var(--muted);
+}
+.history-archived {
+  font-style: italic;
+}
+.history-audit {
+  border-top: 1px solid var(--border);
+  padding-top: 9px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.history-audit summary {
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  cursor: pointer;
+  font-weight: 600;
+}
+.history-audit ol {
+  display: grid;
+  gap: 8px;
+  padding-left: 20px;
+}
+.history-audit li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+.history-event-note {
+  width: 100%;
+}
+.analytics-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 24px;
+}
+.analytics-note svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--accent);
+}
+@media (max-width: 900px) {
+  .analytics-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .analytics-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .analytics-filter {
+    width: 100%;
+  }
+  .analytics-month-controls {
+    align-self: flex-start;
+    width: min(100%, 300px);
+  }
+  .analytics-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .analytics-metric {
+    padding: 16px;
+  }
+  .calendar-card {
+    padding: 16px 12px;
+  }
+  .calendar-weekdays,
+  .calendar-days {
+    gap: 3px;
+  }
+  .calendar-day,
+  .calendar-spacer {
+    min-height: 58px;
+    padding: 5px 3px;
+    border-radius: 8px;
+  }
+  .calendar-day-counts {
+    gap: 3px;
+    font-size: 9px;
+  }
+  .history-dose-heading {
+    flex-wrap: wrap;
+  }
+  .history-status {
+    margin-left: 48px;
+  }
+}
+
 .page-heading-row,
 .medicine-card-top,
 .form-card-heading,
