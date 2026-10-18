@@ -76,15 +76,17 @@ describe('backup, restore, and offline use', () => {
         await page
           .getByRole('button', { name: 'Archive', exact: true })
           .count(),
-        0,
+        1,
       )
       assert.equal(
         await page
           .getByRole('button', { name: 'Restore', exact: true })
           .count(),
-        1,
+        0,
       )
 
+      await page.getByRole('link', { name: 'Today', exact: true }).click()
+      await page.getByRole('heading', { name: 'Today', exact: true }).waitFor()
       await page.evaluate(async () => {
         await navigator.serviceWorker.ready
       })
