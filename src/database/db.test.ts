@@ -11,7 +11,7 @@ import type { StockTransaction } from './models'
 import { parseQuantity, type Quantity } from './quantity'
 import { afterEach, expect, it } from 'vitest'
 import { MedTrackDatabase } from './db'
-import { DATABASE_VERSION, SCHEMA_V1 } from './schema'
+import { DATABASE_VERSION, SCHEMA_V1, SCHEMA_V2 } from './schema'
 const databases: MedTrackDatabase[] = []
 function database() {
   const db = new MedTrackDatabase(`medtrack-test-${crypto.randomUUID()}`)
@@ -253,35 +253,61 @@ it('rejects invalid stock deltas at the persistence boundary', async () => {
   expect(await db.stockTransactions.count()).toBe(0)
 })
 
-it('upgrades a v1 database non-destructively when a future schema adds an index', async () => {
+it('migrates a v1 database and backfills newer optional medicine fields', async () => {
   const db = database()
+  const legacy = new Dexie(db.name)
+  legacy.version(1).stores(SCHEMA_V1)
+  const oldMedicine = medicine()
+  delete oldMedicine.lowStockAlertsEnabled
+  delete oldMedicine.lastLowStockAlertDate
+  try {
+    await legacy.open()
+    await legacy.table('medicines').add(oldMedicine)
+    await legacy.table('stockTransactions').add(initialStock())
+  } finally {
+    legacy.close()
+  }
+
+  await db.open()
+  expect(db.verno).toBe(DATABASE_VERSION)
+  expect(await db.medicines.get(oldMedicine.id)).toEqual({
+    ...oldMedicine,
+    lowStockAlertsEnabled: false,
+    lastLowStockAlertDate: null,
+  })
+  expect(
+    await db.medicines.where('updatedAt').equals(oldMedicine.updatedAt).count(),
+  ).toBe(1)
+  expect(await db.stockTransactions.toArray()).toEqual([initialStock()])
+})
+
+it('refuses a newer database without clearing user data', async () => {
+  const db = database()
+  await db.open()
   await db.medicines.add(medicine())
   await db.stockTransactions.add(initialStock())
   db.close()
+  const newerSchema = {
+    ...SCHEMA_V2,
+    medicines: `${SCHEMA_V2.medicines}, futureIndex`,
+  }
   const future = new Dexie(db.name)
   future.version(1).stores(SCHEMA_V1)
-  future.version(2).stores({ medicines: `${SCHEMA_V1.medicines}, unit` })
+  future.version(2).stores(SCHEMA_V2)
+  future.version(3).stores(newerSchema)
   try {
     await future.open()
-    expect(
-      await future.table('medicines').where('unit').equals('tablet').first(),
-    ).toEqual(medicine())
-    expect(await future.table('stockTransactions').toArray()).toEqual([
-      initialStock(),
-    ])
   } finally {
     future.close()
   }
-  // Downgrades fail explicitly: never reset a user's newer database.
   await expect(db.open().then(() => 'opened')).rejects.toThrow(
     'newer MedTrack version',
   )
   const preserved = new Dexie(db.name)
-  preserved
-    .version(2)
-    .stores({ ...SCHEMA_V1, medicines: `${SCHEMA_V1.medicines}, unit` })
+  preserved.version(3).stores(newerSchema)
   try {
     await preserved.open()
+    expect(await preserved.table('medicines').toArray()).toEqual([medicine()])
     expect(await preserved.table('stockTransactions').toArray()).toEqual([
       initialStock(),
     ])
