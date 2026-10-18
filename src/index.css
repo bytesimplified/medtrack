@@ -1,9 +1,19 @@
 @import 'tailwindcss';
 
 :root {
+  color-scheme: light;
+  --canvas: #f5f8f7;
+  --surface: #ffffff;
+  --surface-soft: #edf5f1;
+  --ink: #162c29;
+  --muted: #526762;
+  --accent: #176653;
+  --accent-ink: #ffffff;
+  --border: #d5e2dc;
+  --focus: #176653;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-  color: #0f172a;
-  background-color: #f5f8f7;
+  color: var(--ink);
+  background-color: var(--canvas);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -13,4 +23,215 @@
 body {
   margin: 0;
   min-width: 320px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+a {
+  color: var(--accent);
+}
+.app-shell {
+  max-width: 1120px;
+  margin: auto;
+  min-height: 100svh;
+}
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.brand-icon {
+  padding: 12px;
+  border-radius: 16px;
+  color: var(--accent);
+  background: var(--surface-soft);
+}
+.brand-caption {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+.app-content {
+  padding: 32px 24px calc(112px + env(safe-area-inset-bottom));
+  min-width: 0;
+}
+.app-content:focus:not(:focus-visible) {
+  outline: none;
+}
+.skip-link {
+  position: fixed;
+  z-index: 10;
+  top: 8px;
+  left: 8px;
+  padding: 12px;
+  background: var(--surface);
+  transform: translateY(-200%);
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+.primary-nav {
+  position: fixed;
+  z-index: 5;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+.nav-link {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-direction: column;
+  min-height: 56px;
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.nav-link[aria-current='page'] {
+  color: var(--accent);
+  background: var(--surface-soft);
+}
+.page-kicker {
+  margin-bottom: 12px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+}
+.page-title {
+  font-size: clamp(30px, 5vw, 42px);
+  font-weight: 650;
+  letter-spacing: -1.4px;
+  line-height: 1.15;
+}
+.page-description {
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 12px 0 28px;
+  max-width: 520px;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 28px;
+}
+.empty-state {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.empty-icon {
+  display: inline-flex;
+  padding: 20px;
+  border-radius: 24px;
+  background: var(--surface-soft);
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+.empty-title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+.empty-description {
+  color: var(--muted);
+  max-width: 360px;
+  line-height: 1.7;
+  margin: 12px 0 24px;
+}
+.page-note {
+  margin: 20px 0;
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 13px;
+}
+
+@media (min-width: 768px) {
+  .app-shell {
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+  .app-header {
+    grid-column: 1 / -1;
+    padding: 28px 32px;
+  }
+  .app-content {
+    padding: 44px 40px 60px;
+  }
+  .primary-nav {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    flex-direction: column;
+    gap: 8px;
+    border: 0;
+    background: transparent;
+    padding: 40px 16px;
+  }
+  .nav-link {
+    flex: initial;
+    flex-direction: row;
+    justify-content: flex-start;
+    min-height: 52px;
+    padding: 0 16px;
+    gap: 12px;
+    font-size: 14px;
+  }
+  .empty-state {
+    min-height: 340px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
 }
