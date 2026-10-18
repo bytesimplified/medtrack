@@ -85,7 +85,11 @@ jobs:
             -gpu swiftshader_indirect \
             -accel auto \
             >/tmp/medtrack-emulator.log 2>&1 &
-          adb wait-for-device
+          if ! timeout 120s adb wait-for-device; then
+            echo 'Android emulator did not connect within 120 seconds.' >&2
+            tail -n 120 /tmp/medtrack-emulator.log
+            exit 1
+          fi
           for attempt in {1..120}; do
             if [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" == '1' ]]; then
               exit 0
