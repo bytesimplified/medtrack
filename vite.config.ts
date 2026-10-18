@@ -53,13 +53,14 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (response.ok) {
-            void caches.open(CACHE_NAME)
-              .then((cache) => cache.put('/index.html', response.clone()));
+          if (!response.ok) {
+            return caches.match('/index.html').then((cached) => cached || response);
           }
+          void caches.open(CACHE_NAME)
+            .then((cache) => cache.put('/index.html', response.clone()));
           return response;
         })
-        .catch(() => caches.match('/index.html')),
+        .catch(() => caches.match('/index.html').then((cached) => cached || Response.error())),
     );
     return;
   }
