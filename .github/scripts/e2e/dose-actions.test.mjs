@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict'
 import { after, afterEach, before, beforeEach, describe, it } from 'node:test'
 import { chromium } from 'playwright'
 import { preview } from 'vite'
