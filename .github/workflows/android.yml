@@ -1,0 +1,98 @@
+name: Android APK
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  debug-apk:
+    name: Build and launch debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Set up Java
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Install web dependencies
+        run: npm ci
+
+      - name: Build web app and sync Android project
+        run: npm run android:sync
+
+      - name: Install Android SDK and emulator image
+        run: |
+          for attempt in {1..100}; do printf 'y\n'; done | sdkmanager --licenses >/dev/null
+          sdkmanager \
+            'platform-tools' \
+            'platforms;android-36' \
+            'build-tools;36.0.0' \
+            'emulator' \
+            'system-images;android-35;google_apis;x86_64'
+
+      - name: Build debug APK
+        run: ./gradlew --no-daemon assembleDebug
+        working-directory: android
+
+      - name: Upload installable debug APK
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: medtrack-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Create Android emulator
+        run: |
+          avdmanager create avd \
+            --force \
+            --name medtrack-ci \
+            --package 'system-images;android-35;google_apis;x86_64' \
+            <<< 'no'
+          emulator \
+            -avd medtrack-ci \
+            -no-window \
+            -no-audio \
+            -no-boot-anim \
+            -no-snapshot \
+            -gpu swiftshader_indirect \
+            -accel auto \
+            >/tmp/medtrack-emulator.log 2>&1 &
+          adb wait-for-device
+          for attempt in {1..120}; do
+            if [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" == '1' ]]; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo 'Android emulator did not finish booting.' >&2
+          tail -n 120 /tmp/medtrack-emulator.log
+          exit 1
+
+      - name: Install and launch MedTrack on emulator
+        run: bash scripts/android/ci-emulator-smoke.sh android/app/build/outputs/apk/debug/app-debug.apk
