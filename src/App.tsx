@@ -10,6 +10,7 @@ import { usePage } from './navigation/usePage'
 import { Today } from './pages/Today'
 import { Medicines } from './pages/Medicines'
 import { Insights } from './pages/Insights'
+import { BackupControls } from './backup/BackupControls'
 const titles = { today: 'Today', medicines: 'Medicines', insights: 'Insights' }
 export default function App() {
   const page = usePage()
@@ -53,7 +54,12 @@ export default function App() {
   return (
     <AppShell
       navigation={<Navigation page={page} />}
-      settings={<ThemePicker />}
+      settings={
+        <div className="header-tools">
+          <ThemePicker />
+          <BackupControls />
+        </div>
+      }
     >
       {page === 'today' && <Today />}
       {page === 'medicines' && <Medicines />}
