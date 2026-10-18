@@ -27,6 +27,8 @@ describe('backup, restore, and offline use', () => {
     })
     try {
       const page = await context.newPage()
+      const pageErrors = []
+      page.on('pageerror', (error) => pageErrors.push(error.message))
       await page.goto('http://127.0.0.1:5184')
       await page.getByRole('heading', { name: 'Today', exact: true }).waitFor()
       await page.getByRole('link', { name: 'Medicines', exact: true }).click()
@@ -99,7 +101,24 @@ describe('backup, restore, and offline use', () => {
       )
       await context.setOffline(true)
       await page.reload()
-      await page.getByRole('heading', { name: 'Today', exact: true }).waitFor()
+      const todayHeading = page.getByRole('heading', {
+        name: 'Today',
+        exact: true,
+      })
+      try {
+        await todayHeading.waitFor({ timeout: 5000 })
+      } catch {
+        const state = await page.evaluate(async () => ({
+          url: location.href,
+          title: document.title,
+          text: document.body.innerText.slice(0, 500),
+          controlled: navigator.serviceWorker.controller !== null,
+          cachedIndex: Boolean(await caches.match('/index.html')),
+        }))
+        assert.fail(
+          `Offline app shell did not render: ${JSON.stringify({ ...state, pageErrors })}`,
+        )
+      }
       await page.getByRole('link', { name: 'Insights', exact: true }).click()
       await page
         .getByRole('heading', { name: 'Insights', exact: true })
