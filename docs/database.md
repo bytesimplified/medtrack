@@ -27,11 +27,11 @@ and basic stock-delta validity. `put`, `update`, `delete`, and `clear` on histor
 tables cannot rewrite existing history. Corrections append new records.
 
 IndexedDB does **not** provide foreign keys or complete application validation.
-Future service-layer commands must validate referenced IDs, recurrence values,
+Service-layer commands validate referenced IDs, recurrence values,
 non-overlapping schedule effective periods, timestamp/status consistency,
 non-negative resulting balances, and exact matching reversals. The database
-constraint alone is not a completed idempotent dose service: PR 07 must treat a
-retry as a no-op/result lookup rather than expose a duplicate-key error.
+constraint is backed by dose-service operation checks: retries return the
+recorded result rather than exposing a duplicate-key error.
 
 ## Quantities and time
 
@@ -51,7 +51,7 @@ raw milliunits or pass them directly to a user-facing dose input.
 
 Local dates use `YYYY-MM-DD`, local clock times use `HH:mm`, and timestamps use
 UTC ISO-8601 strings. Each schedule stores an IANA timezone. Date/time strings,
-weekdays, intervals, and positive doses require runtime validation in PRs 04/05.
+weekdays, intervals, and positive doses are validated by scheduling and medicine services.
 Meal windows have optional reminder times; they do not imply a clock time.
 
 A schedule's `startDate` remains the recurrence anchor. `effectiveFrom` is
@@ -71,7 +71,7 @@ await db.transaction(
   db.doseEvents,
   db.stockTransactions,
   async () => {
-    // PR 07: validate, update occurrence, append event, append stock effect.
+    // Validate, update occurrence, append event, append stock effect.
     // Let failures reject the transaction so every write rolls back.
   },
 )
@@ -79,7 +79,7 @@ await db.transaction(
 
 Generate UUIDs and collect user input before starting transactions. Avoid
 unrelated network, timers, or UI work inside an IndexedDB transaction. Refill,
-undo, and dose services will be implemented in their scheduled PRs.
+undo, and dose services follow this transaction boundary.
 
 ## Schema upgrades and data safety
 
@@ -98,8 +98,8 @@ IndexedDB version multiplied by ten, which the compatibility guard checks.
 
 A storage failure must be surfaced instead of silently falling back to temporary
 memory or resetting data. Persistence survives normal close/reopen, but browser
-site-data clearing or eviction can remove IndexedDB. Persistent-storage requests,
-backup/restore, offline application loading, and recovery UI remain in PR 13.
+site-data clearing or eviction can remove IndexedDB. The app includes JSON
+backup/restore, offline loading, storage-status reporting, and error recovery.
 
 ## Tests
 
@@ -107,5 +107,5 @@ backup/restore, offline application loading, and recovery UI remain in PR 13.
 creation, persistence on reopen, unique dose/version/operation constraints,
 nullable indexes, atomic rollback, immutable history, snapshot preservation,
 stock input validation, fixed precision, non-destructive upgrades, and refusal
-to use a newer schema. The app startup test still passes on this independent
-branch. Real Android storage lifecycle checks follow in PR 12.
+to use a newer schema. Android CI checks installation and launch; physical-device
+storage lifecycle checks remain on the release checklist.

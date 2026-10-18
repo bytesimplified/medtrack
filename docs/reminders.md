@@ -25,5 +25,5 @@ in-memory timers for future clock times.
 
 Browser timers only live in the open MedTrack page. Closing the tab or browser
 ends those timers; this implementation does not promise background delivery.
-The adapter interface leaves room for Android local notifications. Capacitor
-integration, Android permissions, and background scheduling belong to PR 12.
+On Android, the Capacitor adapter schedules native local notifications. See the
+[Android guide](android-build.md) for permissions and delivery limits.

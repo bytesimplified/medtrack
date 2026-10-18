@@ -1,6 +1,6 @@
 # Stock management
 
-`src/stock/service.ts` records refills and count corrections as append-only
+`src/stock/ledger.ts` records refills and count corrections as append-only
 `StockTransaction` rows. A refill is positive; an adjustment may add or remove
 stock and requires a reason. Adjustments that would make the ledger negative
 are rejected. Each command accepts an operation ID so a retry cannot duplicate

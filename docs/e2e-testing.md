@@ -18,6 +18,12 @@ notification state; tests do not use personal or shared browser data.
 The suite checks visible user behavior and persistent state across routes and
 reloads. Domain edge cases remain covered by Vitest unit tests.
 
+Unit and component tests live in `test/`, mirroring their `src/` module paths
+(for example, `src/stock/ledger.ts` → `test/stock/ledger.test.ts`). Shared
+fixtures stay in `test/database/` and DOM setup in `test/setup.ts`. Browser
+journeys and smoke checks live in `test/e2e/`; Android emulator checks live in
+`test/e2e/android/`. Keep test-only code outside `src/`.
+
 ## Run locally
 
 Use Node.js 24 and install the app dependencies first:
