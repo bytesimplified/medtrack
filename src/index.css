@@ -401,6 +401,11 @@ a {
   .app-header {
     padding: 20px 16px;
     gap: 8px;
+    flex-wrap: wrap;
+  }
+  .header-tools {
+    width: 100%;
+    justify-content: space-between;
   }
   .brand {
     gap: 8px;
