@@ -52,7 +52,7 @@ This README is the project's standing overview and progress tracker. Keep the ov
 | DATA01    | Export, backup, restore, and migration verification                                   | 13            | Planned                                           |
 | QA01      | PC development, formatting, linting, startup test, and build CI                       | 01            | Done                                              |
 | QA02      | Domain tests for schedules, stock, corrections, and analytics                         | 04–10         | Unit tests done; analytics coverage in progress   |
-| QA03      | Automated browser end-to-end tests on pull requests                                   | 08, 09, 11    | Stock/reminder journeys done; broader E2E planned |
+| QA03      | Automated browser end-to-end tests on pull requests                                   | 08, 09, 11    | Stock/reminder done; broader journeys in progress |
 | ANDROID01 | Capacitor integration, emulator checks, and automated debug APK builds                | 12            | Planned                                           |
 | RELEASE01 | Physical-device validation, signing documentation, and release readiness              | 12, 13        | Planned                                           |
 
@@ -72,7 +72,7 @@ The numbers below are roadmap identifiers. Actual GitHub PR links are added when
 | 08   | [Stock Management](https://github.com/bytesimplified/medtrack/pull/8) · `feat/stock-management`                | Refills, adjustments, supply forecasting, and low-stock threshold detection              | Done (merged) |
 | 09   | [Reminders and Notifications](https://github.com/bytesimplified/medtrack/pull/9) · `feat/notifications`        | Browser adapter, permission handling, dose snooze, and low-stock alert rules             | Done (merged) |
 | 10   | [History and Analytics](https://github.com/bytesimplified/medtrack/pull/14) · `feat/analytics`                 | Calendar, medicine history, taken/skipped/unconfirmed counts, and adherence              | In progress   |
-| 11   | Automated End-to-End Tests · `test/e2e-coverage`                                                               | Expand Playwright journeys beyond stock and reminder flows                               | Planned       |
+| 11   | [Automated End-to-End Tests](https://github.com/bytesimplified/medtrack/pull/15) · `test/e2e-coverage`         | Expand Playwright journeys beyond stock and reminder flows                               | In progress   |
 | 12   | Android Integration and APK CI · `feat/android-build`                                                          | Capacitor, app identity/permissions, emulator checks, debug APK workflow, signing guide  | Planned       |
 | 13   | Backup, Polish and Release · `release/v1-polish`                                                               | Export/restore, offline/error handling, accessibility, migrations, and release checklist | Planned       |
 
