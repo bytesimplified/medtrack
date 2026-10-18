@@ -1,3 +1,4 @@
+import { EmptyState } from '../components/ui/EmptyState'
 import { ChartNoAxesCombined } from 'lucide-react'
 export function Insights() {
   return (
@@ -7,18 +8,13 @@ export function Insights() {
       <p className="page-description">
         A simple view of your routine over time.
       </p>
-      <section className="card empty-state" aria-labelledby="insights-empty">
-        <span className="empty-icon">
-          <ChartNoAxesCombined size={32} aria-hidden="true" />
-        </span>
-        <h2 className="empty-title" id="insights-empty">
-          Every day tells a story
-        </h2>
-        <p className="empty-description">
-          History and insights are coming soon. Once dose tracking is available,
-          your records will help you see your routine.
-        </p>
-      </section>
+      <EmptyState
+        icon={<ChartNoAxesCombined size={32} />}
+        title="Every day tells a story"
+      >
+        History and insights are coming soon. Once dose tracking is available,
+        your records will help you see your routine.
+      </EmptyState>
     </>
   )
 }
