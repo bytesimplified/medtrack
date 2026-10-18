@@ -1,11 +1,25 @@
 import { liveQuery } from 'dexie'
-import { CalendarDays, Pill } from 'lucide-react'
+import {
+  CalendarDays,
+  Check,
+  Clock3,
+  Pill,
+  SkipForward,
+  Undo2,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { EmptyState } from '../components/ui/EmptyState'
 import { db } from '../database/db'
 import type { DoseOccurrence, MedicineUnit } from '../database/models'
 import { formatQuantity, type Quantity } from '../database/quantity'
+import {
+  markDoseSkipped,
+  markDoseTaken,
+  snoozeDoseLater,
+  undoDose,
+} from '../doses/service'
 import { getTodayDashboard, type TodayDashboard } from '../today/dashboard'
 import { ensureTodayOccurrences } from '../today/occurrences'
 
@@ -59,11 +73,24 @@ function errorMessage(error: unknown) {
     : 'Today’s schedule could not be loaded from this device.'
 }
 
+function snoozeLabel(occurrence: DoseOccurrence) {
+  if (!occurrence.snoozedUntil) return null
+  const time = new Intl.DateTimeFormat(undefined, {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: occurrence.timezone,
+  }).format(new Date(occurrence.snoozedUntil))
+  return 'Reminder moved to ' + time
+}
+
 export function Today() {
   const [clock, setClock] = useState(() => new Date())
   const [dashboard, setDashboard] = useState<TodayDashboard | null>(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
+  const [actionNotice, setActionNotice] = useState<string | null>(null)
+  const [busyOccurrence, setBusyOccurrence] = useState<string | null>(null)
 
   useEffect(() => {
     const timer = window.setInterval(() => setClock(new Date()), 60_000)
@@ -109,6 +136,36 @@ export function Today() {
     dashboard.applicableScheduleCount > 0 &&
     dashboard.pausedScheduleCount === dashboard.applicableScheduleCount
 
+  async function runDoseAction(
+    occurrence: DoseOccurrence,
+    action: 'taken' | 'skipped' | 'later' | 'undo',
+  ) {
+    if (busyOccurrence) return
+    setBusyOccurrence(occurrence.id)
+    setActionError(null)
+    setActionNotice(null)
+    try {
+      const options = { operationId: crypto.randomUUID() }
+      if (action === 'taken') {
+        await markDoseTaken(occurrence.id, db, options)
+        setActionNotice('Dose marked taken.')
+      } else if (action === 'skipped') {
+        await markDoseSkipped(occurrence.id, db, options)
+        setActionNotice('Dose marked skipped.')
+      } else if (action === 'later') {
+        await snoozeDoseLater(occurrence.id, db, options)
+        setActionNotice('Dose moved later.')
+      } else {
+        await undoDose(occurrence.id, db, options)
+        setActionNotice('Dose action undone.')
+      }
+    } catch (error: unknown) {
+      setActionError(errorMessage(error))
+    } finally {
+      setBusyOccurrence(null)
+    }
+  }
+
   return (
     <>
       <p className="page-kicker">One day at a time</p>
@@ -124,6 +181,16 @@ export function Today() {
       {loadError && (
         <p className="form-error" role="alert">
           {loadError}
+        </p>
+      )}
+      {actionError && (
+        <p className="form-error" role="alert">
+          {actionError}
+        </p>
+      )}
+      {actionNotice && (
+        <p className="success-message today-action-notice" role="status">
+          {actionNotice}
         </p>
       )}
 
@@ -197,12 +264,68 @@ export function Today() {
                             dashboard.stockBalances[occurrence.medicineId],
                           )}
                         </p>
+                        {snoozeLabel(occurrence) && (
+                          <p className="today-dose-snooze">
+                            {snoozeLabel(occurrence)}
+                          </p>
+                        )}
                       </div>
                       <span
                         className={`status-badge today-status today-status-${occurrence.status}`}
                       >
                         {statusLabel(occurrence.status)}
                       </span>
+                      <div className="today-dose-actions">
+                        {occurrence.status === 'pending' ? (
+                          <>
+                            <Button
+                              aria-label={`Take ${occurrence.medicineName} ${section.title}`}
+                              className="button-small"
+                              disabled={busyOccurrence !== null}
+                              onClick={() =>
+                                void runDoseAction(occurrence, 'taken')
+                              }
+                            >
+                              <Check size={16} aria-hidden="true" />
+                              Take
+                            </Button>
+                            <Button
+                              aria-label={`Skip ${occurrence.medicineName} ${section.title}`}
+                              className="button-secondary button-small"
+                              disabled={busyOccurrence !== null}
+                              onClick={() =>
+                                void runDoseAction(occurrence, 'skipped')
+                              }
+                            >
+                              <SkipForward size={16} aria-hidden="true" />
+                              Skip
+                            </Button>
+                            <Button
+                              aria-label={`Move ${occurrence.medicineName} ${section.title} later`}
+                              className="button-secondary button-small"
+                              disabled={busyOccurrence !== null}
+                              onClick={() =>
+                                void runDoseAction(occurrence, 'later')
+                              }
+                            >
+                              <Clock3 size={16} aria-hidden="true" />
+                              Later
+                            </Button>
+                          </>
+                        ) : (
+                          <Button
+                            aria-label={`Undo ${occurrence.medicineName} ${section.title}`}
+                            className="button-secondary button-small"
+                            disabled={busyOccurrence !== null}
+                            onClick={() =>
+                              void runDoseAction(occurrence, 'undo')
+                            }
+                          >
+                            <Undo2 size={16} aria-hidden="true" />
+                            Undo
+                          </Button>
+                        )}
+                      </div>
                     </Card>
                   ))}
                 </div>

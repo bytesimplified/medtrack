@@ -101,13 +101,16 @@ export interface DoseEvent {
   readonly id: Id
   readonly operationId: Id // Unique retry token for a logical command.
   readonly occurrenceId: Id
-  readonly action: 'taken' | 'skipped' | 'undone' | 'corrected'
+  readonly action: 'taken' | 'skipped' | 'snoozed' | 'undone' | 'corrected'
   readonly previousStatus: DoseStatus
   readonly newStatus: DoseStatus
   readonly previousQuantityTaken: Quantity | null
   readonly newQuantityTaken: Quantity | null
   readonly previousTakenAt: Timestamp | null
   readonly newTakenAt: Timestamp | null
+  /** Optional for compatibility with audit rows written before snooze history. */
+  readonly previousSnoozedUntil?: Timestamp | null
+  readonly newSnoozedUntil?: Timestamp | null
   readonly reversesEventId: Id | null
   readonly recordedAt: Timestamp
   readonly note: string | null
