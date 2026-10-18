@@ -18,6 +18,10 @@ jobs:
     name: Build and launch debug APK
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    env:
+      ANDROID_USER_HOME: ${{ runner.temp }}/medtrack-android
+      ANDROID_EMULATOR_HOME: ${{ runner.temp }}/medtrack-android
+      ANDROID_AVD_HOME: ${{ runner.temp }}/medtrack-android/avd
 
     steps:
       - name: Check out repository
@@ -78,11 +82,15 @@ jobs:
 
       - name: Create Android emulator
         run: |
+          mkdir -p "$ANDROID_AVD_HOME"
           avdmanager create avd \
             --force \
             --name medtrack-ci \
+            --path "$ANDROID_AVD_HOME/medtrack-ci.avd" \
             --package 'system-images;android-35;google_apis;x86_64' \
             <<< 'no'
+          avdmanager list avd
+          "$ANDROID_HOME/emulator/emulator" -list-avds | grep -Fx medtrack-ci
           "$ANDROID_HOME/emulator/emulator" \
             -avd medtrack-ci \
             -no-window \
