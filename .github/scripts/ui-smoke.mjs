@@ -40,7 +40,7 @@ import { preview } from 'vite'
     await page.waitForFunction(
       () => document.documentElement.dataset.theme === 'dark',
     )
-    for (const width of [390, 320]) {
+    for (const width of [640, 480, 390, 320]) {
       await page.setViewportSize({ width, height: 844 })
       assert.equal(
         await page.evaluate(

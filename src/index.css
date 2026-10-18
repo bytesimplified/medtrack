@@ -302,7 +302,7 @@ a {
   --error: #ffb4ab;
 }
 .theme-settings {
-  max-width: 240px;
+  max-width: 300px;
 }
 .theme-picker {
   display: flex;
@@ -352,5 +352,17 @@ a {
   }
   .card {
     padding: 24px 20px;
+  }
+}
+
+.theme-button svg {
+  flex-shrink: 0;
+}
+.theme-label {
+  display: none;
+}
+@media (min-width: 640px) {
+  .theme-label {
+    display: inline;
   }
 }
