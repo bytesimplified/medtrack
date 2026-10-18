@@ -397,15 +397,22 @@ a {
   border-radius: 20px;
   background: var(--surface);
 }
-@media (max-width: 479px) {
+@media (max-width: 520px) {
   .app-header {
-    padding: 20px 16px;
-    gap: 8px;
     flex-wrap: wrap;
   }
   .header-tools {
     width: 100%;
     justify-content: space-between;
+  }
+}
+@media (max-width: 479px) {
+  .app-header {
+    padding: 20px 16px;
+    gap: 8px;
+  }
+  .header-tools {
+    gap: 8px;
   }
   .brand {
     gap: 8px;
