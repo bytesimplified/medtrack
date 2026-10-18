@@ -59,17 +59,54 @@ it('registers multiple doses, displays saved stock, edits details, pauses, and a
   await screen.findByRole('heading', { name: 'Vitamin D3' })
 
   fireEvent.click(
-    screen.getAllByRole('button', { name: 'Pause schedule for Vitamin D3' })[0],
+    screen
+      .getAllByRole('button', { name: 'Edit schedule for Vitamin D3' })
+      .find((button) => !button.hasAttribute('disabled'))!,
+  )
+  await screen.findByRole('heading', { name: 'Edit dose schedule' })
+  fireEvent.change(screen.getByLabelText('Dose quantity (tablets)'), {
+    target: { value: '2' },
+  })
+  fireEvent.change(screen.getByLabelText('Frequency'), {
+    target: { value: 'weekdays' },
+  })
+  fireEvent.click(screen.getByLabelText('Monday'))
+  fireEvent.click(screen.getByRole('button', { name: 'Save schedule' }))
+  await screen.findByText(/Schedule updated from/)
+  await waitFor(async () => {
+    const versions = await db.doseSchedules.toArray()
+    const nextVersion = versions.find((schedule) => schedule.version === 2)
+    expect(nextVersion).toMatchObject({
+      quantityPerDose: 2000,
+      recurrence: { type: 'weekdays', weekdays: [1] },
+    })
+    expect(
+      versions.find(
+        (schedule) =>
+          schedule.seriesId === nextVersion?.seriesId &&
+          schedule.id !== nextVersion.id,
+      ),
+    ).toMatchObject({ effectiveTo: nextVersion?.effectiveFrom })
+  })
+
+  fireEvent.click(
+    screen
+      .getAllByRole('button', { name: 'Pause schedule for Vitamin D3' })
+      .find((button) => !button.hasAttribute('disabled'))!,
   )
   await screen.findByText(/Paused/)
+  const pausedSchedule = (await db.doseSchedules.toArray()).find((schedule) =>
+    schedule.pausePeriods.some((period) => period.endDate === null),
+  )!
   fireEvent.click(
-    screen.getAllByRole('button', {
-      name: 'Resume schedule for Vitamin D3',
-    })[0],
+    screen
+      .getAllByRole('button', { name: 'Resume schedule for Vitamin D3' })
+      .find((button) => !button.hasAttribute('disabled'))!,
   )
   await waitFor(async () => {
-    const schedules = await db.doseSchedules.toArray()
-    expect(schedules[0].pausePeriods).toEqual([])
+    expect(
+      (await db.doseSchedules.get(pausedSchedule.id))?.pausePeriods,
+    ).toEqual([])
   })
 
   fireEvent.click(screen.getByRole('button', { name: 'Archive' }))

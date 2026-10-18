@@ -25,6 +25,7 @@ import {
   setSchedulePaused,
 } from '../medicines/registration'
 import { MedicineForm } from './MedicineForm'
+import { ScheduleForm } from './ScheduleForm'
 
 interface MedicineRecord {
   medicine: Medicine
@@ -103,6 +104,10 @@ export function Medicines() {
   const [notice, setNotice] = useState<string | null>(null)
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Medicine | undefined>()
+  const [editingSchedule, setEditingSchedule] = useState<{
+    medicine: Medicine
+    schedule: DoseSchedule
+  }>()
   const [busy, setBusy] = useState<string | null>(null)
 
   useEffect(() => {
@@ -144,6 +149,7 @@ export function Medicines() {
 
   function openAddForm() {
     setEditing(undefined)
+    setEditingSchedule(undefined)
     setNotice(null)
     setActionError(null)
     setFormOpen(true)
@@ -151,6 +157,15 @@ export function Medicines() {
 
   function openEditForm(medicine: Medicine) {
     setEditing(medicine)
+    setEditingSchedule(undefined)
+    setNotice(null)
+    setActionError(null)
+    setFormOpen(true)
+  }
+
+  function openScheduleEdit(medicine: Medicine, schedule: DoseSchedule) {
+    setEditing(undefined)
+    setEditingSchedule({ medicine, schedule })
     setNotice(null)
     setActionError(null)
     setFormOpen(true)
@@ -159,6 +174,7 @@ export function Medicines() {
   function closeForm() {
     setFormOpen(false)
     setEditing(undefined)
+    setEditingSchedule(undefined)
   }
 
   async function runAction(key: string, action: () => Promise<unknown>) {
@@ -207,7 +223,20 @@ export function Medicines() {
         </p>
       )}
 
-      {formOpen && (
+      {formOpen && editingSchedule && (
+        <ScheduleForm
+          key={editingSchedule.schedule.id}
+          medicine={editingSchedule.medicine}
+          schedule={editingSchedule.schedule}
+          onCancel={closeForm}
+          onSaved={(effectiveFrom) => {
+            closeForm()
+            setNotice('Schedule updated from ' + effectiveFrom + '.')
+          }}
+        />
+      )}
+
+      {formOpen && !editingSchedule && (
         <MedicineForm
           key={editing?.id ?? 'new'}
           editing={editing}
@@ -297,6 +326,10 @@ export function Medicines() {
                             <p className="field-hint">
                               {recurrenceLabel(schedule)} · starts{' '}
                               {schedule.startDate}
+                              {' · version ' + schedule.version}
+                              {schedule.effectiveTo
+                                ? ' · replaced from ' + schedule.effectiveTo
+                                : ''}
                               {schedule.endDate
                                 ? ' · ends ' + schedule.endDate
                                 : ''}
@@ -306,7 +339,22 @@ export function Medicines() {
                           <Button
                             className="button-secondary button-small"
                             disabled={
-                              busy === schedule.id || medicine.isArchived
+                              busy === schedule.id ||
+                              medicine.isArchived ||
+                              schedule.effectiveTo !== null
+                            }
+                            onClick={() => openScheduleEdit(medicine, schedule)}
+                            aria-label={'Edit schedule for ' + medicine.name}
+                          >
+                            <Pencil size={16} aria-hidden="true" />
+                            Edit schedule
+                          </Button>
+                          <Button
+                            className="button-secondary button-small"
+                            disabled={
+                              busy === schedule.id ||
+                              medicine.isArchived ||
+                              schedule.effectiveTo !== null
                             }
                             onClick={() =>
                               void runAction(schedule.id, () =>
